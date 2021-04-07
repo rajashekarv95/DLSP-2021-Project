@@ -131,3 +131,5 @@ dmypy.json
 #Add yours here
 dataset/
 .DS_Store
+.vscode/
+/test_augmentations/
