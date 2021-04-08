@@ -19,7 +19,7 @@ export SINGULARITY_CACHEDIR=/tmp/$USER
 cp -rp /scratch/DL21SP/student_dataset.sqsh /tmp
 echo "Dataset is copied to /tmp"
 
-cd $HOME/test
+cd $HOME/DLSP-2021-PROJECT
 
 singularity exec --nv \
 --bind /scratch \
@@ -29,7 +29,7 @@ singularity exec --nv \
 /bin/bash -c "
 source /ext3/env.sh
 conda activate dev
-python3 train_fixmatch.py --checkpoint-path $/SCRATCH/checkpoints/model.pth \
+python train_fixmatch.py --checkpoint-path $/SCRATCH/checkpoints/model.pth \
 --batch-size 1 \
 --num-epochs 1 \
 --num-steps 1 \
