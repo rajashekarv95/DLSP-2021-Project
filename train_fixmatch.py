@@ -114,6 +114,7 @@ def main():
 
     model.train()
     for epoch in tqdm(range(n_epochs)):
+        loss_epoch = 0.0
         for batch_idx in tqdm(range(n_steps)):
             try:
                 img_lab, targets_lab = labeled_iter.next()
@@ -179,7 +180,8 @@ def main():
 
             loss_total = loss_labeled + lamd * loss_unlabeled
 
-            print("Total loss: ", loss_total)
+            # print("Total loss: ", loss_total)
+            loss_epoch += loss_total
 
             optimizer.zero_grad()
             loss_total.backward()
@@ -187,15 +189,18 @@ def main():
 
 
             # break
+        print(f"Epoch number: {epoch}, loss: {loss_epoch/(n_steps * batch_size_labeled)}")
         torch.save(model.state_dict(), checkpoint_path)
         model.eval()
         with torch.no_grad():
             val_loss = 0
+            val_size = 0
             for batch in val_loader:
                 logits_val = model(batch[0].to(device))
                 val_loss += F.cross_entropy(logits_val, batch[1].to(device))
+                val_size += len(batch)
                 # break
-            print("Val loss: ", val_loss)
+            print("Val loss: ", val_loss/val_size)
 
         # break
 
