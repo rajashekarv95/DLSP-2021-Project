@@ -57,8 +57,6 @@ def main():
     train_from_start = args.train_from_start
 
     if torch.cuda.is_available():
-        model = model.cuda()
-        criterion = criterion.cuda()
         device = torch.device("cuda:0")
     else:
         device = torch.device("cpu")
