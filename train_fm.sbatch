@@ -31,7 +31,7 @@ source /ext3/env.sh
 conda activate dev
 python train_fixmatch.py --checkpoint-path $SCRATCH/checkpoints/model.pth \
 --batch-size 64 \
---num-epochs 4 \
+--num-epochs 1 \
 --num-steps 1000 \
 --train-from-start 0 \
 --dataset-folder /dataset \
