@@ -19,12 +19,13 @@ import torchvision
 from dataloader import CustomDataset
 from transforms import TransformFixMatch, get_transforms
 
-# random.seed(10)
-# torch.manual_seed(10)
-# if torch.cuda.is_available():
-#     torch.cuda.manual_seed(10)
+random.seed(10)
+np.random.seed(10)
+torch.manual_seed(10)
+if torch.cuda.is_available():
+    torch.cuda.manual_seed(10)
 
-# torch.backends.cudnn.deterministic=True
+torch.backends.cudnn.deterministic=True
 
 def main():
     #TODO: Get args
@@ -41,6 +42,13 @@ def main():
     lamd = 1
     tau = 0.95
 
+    if torch.cuda.is_available():
+        model = model.cuda()
+        criterion = criterion.cuda()
+        device = torch.device("cuda:0")
+    else:
+        device = torch.device("cpu")
+
     # print("pwd: ", os.getcwd())
     train_transform, val_transform = get_transforms()
 
@@ -56,6 +64,7 @@ def main():
 
 
     #Uncomment to generate some weak and strong augs
+    #Set batch size = 1
     '''
     for batch in unlabeled_train_loader:
         w_img = batch[0][0]
@@ -79,6 +88,7 @@ def main():
     unlabeled_iter = iter(unlabeled_train_loader)
 
     model = torchvision.models.resnet18(pretrained= False, num_classes = num_classes)
+    model = model.to(device)
     optimizer = torch.optim.SGD(model.parameters(), 
                                 lr = learning_rate,
                                 momentum= momentum,
@@ -102,6 +112,11 @@ def main():
                 unlab, _ = unlabeled_iter.next()
                 img_weak = unlab[0]
                 img_strong = unlab[1]
+            
+            img_lab = img_lab.to(device)
+            targets_lab = targets_lab.to(device)
+            img_weak = img_weak.to(device)
+            img_strong = img_strong.to(device)
 
             # print("Weak: ", img_weak.size())
             # print("Strong: ", img_strong.size())
@@ -159,8 +174,8 @@ def main():
         with torch.no_grad():
             val_loss = 0
             for batch in val_loader:
-                logits_val = model(batch[0])
-                val_loss += F.cross_entropy(logits_val, batch[1])
+                logits_val = model(batch[0].to(device))
+                val_loss += F.cross_entropy(logits_val, batch[1].to(device))
                 break
             print("Val loss: ", val_loss)
 
