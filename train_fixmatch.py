@@ -199,7 +199,7 @@ def main():
             for batch in val_loader:
                 logits_val = model(batch[0].to(device))
                 val_loss += F.cross_entropy(logits_val, batch[1].to(device))
-                val_size += len(batch)
+                val_size += len(batch[0])
                 # break
             print("Val loss: ", val_loss/val_size, flush= True)
 
