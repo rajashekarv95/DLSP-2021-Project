@@ -4,8 +4,8 @@
 #SBATCH --partition=n1s8-t4-1
 #SBATCH --account=dl12
 #SBATCH --time=1:00:00
-#SBATCH --output=train_fm_%j.out
-#SBATCH --error=train_fm_%j.err
+#SBATCH --output=./out/train_fm_%j.out
+#SBATCH --error=./err/train_fm_%j.err
 #SBATCH --exclusive
 #SBATCH --requeue 
 

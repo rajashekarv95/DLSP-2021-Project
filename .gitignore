@@ -134,3 +134,5 @@ dataset/
 .vscode/
 /test_augmentations/
 /checkpoints/
+/out/
+/err/
