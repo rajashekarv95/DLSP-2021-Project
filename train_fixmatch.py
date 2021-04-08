@@ -6,6 +6,7 @@ import random
 import time
 from collections import OrderedDict
 from matplotlib import pyplot as plt
+import argparse
 
 import numpy as np
 import torch
@@ -32,7 +33,7 @@ def main():
     dataset_folder = "./dataset" #TODO
     batch_size_labeled = 64 #1024
     batch_size_unlabeled = 64 #5120
-    batch_size_val = 64 #5120
+    batch_size_val = 256 #5120
     n_epochs = 10
     n_steps = 10
     num_classes = 800
@@ -41,6 +42,8 @@ def main():
     momentum = 0.9
     lamd = 1
     tau = 0.95
+    checkpoint_path = "./checkpoints/model.pth"
+    train_from_start = 1
 
     if torch.cuda.is_available():
         model = model.cuda()
@@ -56,11 +59,12 @@ def main():
     unlabeled_train_dataset = CustomDataset(root= dataset_folder, 
                                             split = "unlabeled", 
                                             transform = TransformFixMatch(mean = 0, std = 0))#TODO
+                                            
     val_dataset = CustomDataset(root= dataset_folder, split = "val", transform = val_transform)
 
     labeled_train_loader = DataLoader(labeled_train_dataset, batch_size= batch_size_labeled, shuffle= True)
     unlabeled_train_loader = DataLoader(unlabeled_train_dataset, batch_size= batch_size_unlabeled, shuffle= True)
-    val_loader = DataLoader(val_dataset, batch_size= batch_size_val, shuffle= True)
+    val_loader = DataLoader(val_dataset, batch_size= batch_size_val, shuffle= False)
 
 
     #Uncomment to generate some weak and strong augs
@@ -89,6 +93,11 @@ def main():
 
     model = torchvision.models.resnet18(pretrained= False, num_classes = num_classes)
     model = model.to(device)
+    if train_from_start == 1:
+        if os.path.exists(checkpoint_path):
+            model.load_state_dict(torch.load(checkpoint_path))
+            print("Restoring model from checkpoint")
+
     optimizer = torch.optim.SGD(model.parameters(), 
                                 lr = learning_rate,
                                 momentum= momentum,
@@ -169,7 +178,7 @@ def main():
 
 
             # break
-
+        torch.save(model.state_dict(), checkpoint_path)
         model.eval()
         with torch.no_grad():
             val_loss = 0
