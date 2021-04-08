@@ -29,7 +29,7 @@ singularity exec --nv \
 /bin/bash -c "
 source /ext3/env.sh
 conda activate dev
-python train_fixmatch.py --checkpoint-path $/SCRATCH/model.pth \
+python train_fixmatch.py --checkpoint-path $SCRATCH/checkpoints/model.pth \
 --batch-size 1 \
 --num-epochs 1 \
 --num-steps 1 \
