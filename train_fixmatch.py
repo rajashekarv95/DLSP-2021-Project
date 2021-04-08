@@ -30,20 +30,31 @@ torch.backends.cudnn.deterministic=True
 
 def main():
     #TODO: Get args
-    dataset_folder = "./dataset" #TODO
-    batch_size_labeled = 64 #1024
-    batch_size_unlabeled = 64 #5120
+    # python3 train_fixmatch.py --checkpoint-path ./checkpoint_path/model.pth --batch-size 1 --num-epochs 1 --num-steps 1 --train-from-start 1 --dataset-folder ./dataset
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--checkpoint-path', type=str, default= "$SCRATCH/model.pth")
+    parser.add_argument('--batch-size', type=int, default= 64)
+    parser.add_argument('--num-epochs', type=int, default= 10)
+    parser.add_argument('--num-steps', type=int, default= 10)
+    parser.add_argument('--train-from-start', type= int, default= 1)
+    parser.add_argument('--dataset-folder', type= str, default= "/dataset")
+    args = parser.parse_args()
+
+
+    dataset_folder = args.dataset_folder
+    batch_size_labeled = args.batch_size
+    batch_size_unlabeled = args.batch_size
     batch_size_val = 256 #5120
-    n_epochs = 10
-    n_steps = 10
+    n_epochs = args.num_epochs
+    n_steps = args.num_steps
     num_classes = 800
     threshold = 0.6
     learning_rate = 0.01
     momentum = 0.9
     lamd = 1
     tau = 0.95
-    checkpoint_path = "./checkpoints/model.pth"
-    train_from_start = 1
+    checkpoint_path = args.checkpoint_path
+    train_from_start = args.train_from_start
 
     if torch.cuda.is_available():
         model = model.cuda()
@@ -93,7 +104,7 @@ def main():
 
     model = torchvision.models.resnet18(pretrained= False, num_classes = num_classes)
     model = model.to(device)
-    if train_from_start == 1:
+    if train_from_start == 0:
         if os.path.exists(checkpoint_path):
             model.load_state_dict(torch.load(checkpoint_path))
             print("Restoring model from checkpoint")
@@ -185,7 +196,7 @@ def main():
             for batch in val_loader:
                 logits_val = model(batch[0].to(device))
                 val_loss += F.cross_entropy(logits_val, batch[1].to(device))
-                break
+                # break
             print("Val loss: ", val_loss)
 
         # break
