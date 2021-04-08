@@ -30,9 +30,10 @@ singularity exec --nv \
 source /ext3/env.sh
 conda activate dev
 python train_fixmatch.py --checkpoint-path $SCRATCH/checkpoints/model.pth \
---batch-size 1 \
---num-epochs 1 \
---num-steps 1 \
+--batch-size 64 \
+--num-epochs 10 \
+--num-steps 8000 \
 --train-from-start 1 \
---dataset-folder /dataset
+--dataset-folder /dataset \
+--learning-rate 0.001
 "

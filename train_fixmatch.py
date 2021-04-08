@@ -38,6 +38,7 @@ def main():
     parser.add_argument('--num-steps', type=int, default= 10)
     parser.add_argument('--train-from-start', type= int, default= 1)
     parser.add_argument('--dataset-folder', type= str, default= "/dataset")
+    parser.add_argument('--learning-rate', type = float, default= 0.01)
     args = parser.parse_args()
 
 
@@ -49,7 +50,7 @@ def main():
     n_steps = args.num_steps
     num_classes = 800
     threshold = 0.6
-    learning_rate = 0.01
+    learning_rate = args.learning_rate
     momentum = 0.9
     lamd = 1
     tau = 0.95
