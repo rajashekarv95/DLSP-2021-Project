@@ -190,7 +190,7 @@ def main():
 
 
             # break
-        print(f"Epoch number: {epoch}, loss: {loss_epoch/(n_steps * batch_size_labeled)}")
+        print(f"Epoch number: {epoch}, loss: {loss_epoch/(n_steps * batch_size_labeled)}", flush= True)
         torch.save(model.state_dict(), checkpoint_path)
         model.eval()
         with torch.no_grad():
@@ -201,7 +201,7 @@ def main():
                 val_loss += F.cross_entropy(logits_val, batch[1].to(device))
                 val_size += len(batch)
                 # break
-            print("Val loss: ", val_loss/val_size)
+            print("Val loss: ", val_loss/val_size, flush= True)
 
         # break
 
