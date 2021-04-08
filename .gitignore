@@ -133,3 +133,4 @@ dataset/
 .DS_Store
 .vscode/
 /test_augmentations/
+/checkpoints/
