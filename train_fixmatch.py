@@ -21,6 +21,7 @@ from dataloader import CustomDataset
 from transforms import TransformFixMatch, get_transforms
 
 from models.resnet import wide_resnet50_2
+from models.resnet import resnet34
 
 random.seed(10)
 np.random.seed(10)
@@ -107,7 +108,7 @@ def main():
     unlabeled_iter = iter(unlabeled_train_loader)
 
     # model = torchvision.models.wide_resnet50_2(pretrained= False, num_classes = num_classes)
-    model = wide_resnet50_2(pretrained=False, num_classes = 800)
+    model = resnet34s(pretrained=False, num_classes = 800)
     model = model.to(device)
     if train_from_start == 0:
         if os.path.exists(checkpoint_path):
