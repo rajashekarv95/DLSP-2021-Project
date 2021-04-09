@@ -43,7 +43,7 @@ def main():
     parser.add_argument('--mu', type= int, default= 7)
     args = parser.parse_args()
 
-
+    print(torchvision.__version__, flush= True)
     dataset_folder = args.dataset_folder
     batch_size_labeled = args.batch_size
     mu = args.mu
