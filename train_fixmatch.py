@@ -40,12 +40,13 @@ def main():
     parser.add_argument('--dataset-folder', type= str, default= "/dataset")
     parser.add_argument('--learning-rate', type = float, default= 0.01)
     parser.add_argument('--threshold', type = float, default= 0.5)
+    parser.add_argument('--mu', type= int, default= 7)
     args = parser.parse_args()
 
 
     dataset_folder = args.dataset_folder
     batch_size_labeled = args.batch_size
-    mu = 7
+    mu = args.mu
     batch_size_unlabeled = mu * args.batch_size
     batch_size_val = 256 #5120
     n_epochs = args.num_epochs
