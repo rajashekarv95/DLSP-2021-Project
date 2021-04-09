@@ -104,7 +104,7 @@ def main():
     labeled_iter = iter(labeled_train_loader)
     unlabeled_iter = iter(unlabeled_train_loader)
 
-    model = torchvision.models.resnet18(pretrained= False, num_classes = num_classes)
+    model = torchvision.models.wide_resnet50_2(pretrained= False, num_classes = num_classes)
     model = model.to(device)
     if train_from_start == 0:
         if os.path.exists(checkpoint_path):
@@ -208,7 +208,7 @@ def main():
             for batch in val_loader:
                 logits_val = model(batch[0].to(device))
                 val_loss += F.cross_entropy(logits_val, batch[1].to(device))
-                val_size += len(batch[0])
+                val_size += 1
                 # break
             print("Val loss: ", val_loss/val_size, flush= True)
 

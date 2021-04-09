@@ -7,7 +7,7 @@ team_name = "Self Supervised Learners"
 email_address = "rv2138@nyu.edu"
 
 def get_model():
-    return models.resnet18(pretrained= False, num_classes = 800)
+    return models.wide_resnet50_2(pretrained= False, num_classes = 800)
 
 cifar10_mean = (0.4914, 0.4822, 0.4465)
 cifar10_std = (0.2471, 0.2435, 0.2616)
