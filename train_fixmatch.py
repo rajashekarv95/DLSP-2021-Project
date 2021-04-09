@@ -45,7 +45,8 @@ def main():
 
     dataset_folder = args.dataset_folder
     batch_size_labeled = args.batch_size
-    batch_size_unlabeled = args.batch_size
+    mu = 7
+    batch_size_unlabeled = mu * args.batch_size
     batch_size_val = 256 #5120
     n_epochs = args.num_epochs
     n_steps = args.num_steps
@@ -195,9 +196,9 @@ def main():
 
 
             # break
-        print(f"Epoch number: {epoch}, loss: {loss_epoch/(n_steps * batch_size_labeled)}, \
-            loss lab: {loss_lab_epoch/(n_steps * batch_size_labeled)},\
-            loss unlab: {loss_unlab_epoch/(n_steps * batch_size_labeled)}", flush= True)
+        print(f"Epoch number: {epoch}, loss: {loss_epoch/(n_steps)}, \
+            loss lab: {loss_lab_epoch/(n_steps)},\
+            loss unlab: {loss_unlab_epoch/(n_steps)}", flush= True)
         torch.save(model.state_dict(), checkpoint_path)
         model.eval()
         with torch.no_grad():
