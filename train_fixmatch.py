@@ -104,7 +104,8 @@ def main():
     labeled_iter = iter(labeled_train_loader)
     unlabeled_iter = iter(unlabeled_train_loader)
 
-    model = torchvision.models.wide_resnet50_2(pretrained= False, num_classes = num_classes)
+    # model = torchvision.models.wide_resnet50_2(pretrained= False, num_classes = num_classes)
+    model = torch.hub.load('pytorch/vision:v0.9.0', 'wide_resnet50_2', pretrained=False, num_classes = 800)
     model = model.to(device)
     if train_from_start == 0:
         if os.path.exists(checkpoint_path):
