@@ -9,8 +9,8 @@ from augment.randaugment import RandAugmentMC
 class TransformFixMatch(object):
     def __init__(self, mean, std):
         #TODO
-        mean = (0.4914, 0.4822, 0.4465)
-        std = (0.2471, 0.2435, 0.2616)
+        mean = (0.4836, 0.4527, 0.4011)
+        std = (0.3065, 0.2728, 0.2355)
         self.weak = transforms.Compose([
             transforms.RandomHorizontalFlip(),
             # transforms.RandomCrop(size=32,
@@ -34,8 +34,8 @@ class TransformFixMatch(object):
 
 def get_transforms():
     #TODO Change this
-    cifar10_mean = (0.4914, 0.4822, 0.4465)
-    cifar10_std = (0.2471, 0.2435, 0.2616)
+    cifar10_mean = (0.4836, 0.4527, 0.4011)
+    cifar10_std = (0.3065, 0.2728, 0.2355)
     transform_labeled = transforms.Compose([
             transforms.RandomHorizontalFlip(),
             # transforms.RandomCrop(size=32,
