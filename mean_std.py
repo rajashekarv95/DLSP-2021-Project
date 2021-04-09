@@ -1,6 +1,6 @@
 def normalize(x):
-    x_sum = torch.sum(torch.mean(x, dim = [2,3], keepdim=True), dim = 0).squeeze(1).squeeze(1)
-    x_sum_sq = torch.sum(torch.mean(torch.pow(x, 2), dim = [2,3], keepdim=True), dim = 0).squeeze(1).squeeze(1)
+    x_sum = torch.sum(torch.mean(x, dim = [2,3]), dim = 0)/64
+    x_sum_sq = torch.sum(torch.mean(torch.pow(x, 2), dim = [2,3]), dim = 0)/64
     # x = x - x_mean
     # x = x / x_std
     return x_sum, x_sum_sq
@@ -64,19 +64,38 @@ from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
 labeled_train_dataset = CustomDataset(root= "./dataset", split = "train")
 labeled_train_loader = DataLoader(labeled_train_dataset, batch_size= 64, shuffle= False)
 
+unlabeled_train_dataset = CustomDataset(root= "./dataset", 
+                                            split = "unlabeled")
+
+unlabeled_train_loader = DataLoader(unlabeled_train_dataset, batch_size= 64, shuffle= False)
+
 mean = torch.zeros(3)
 mean_sq = torch.zeros(3)
 ctr = 0
 for batch in tqdm(labeled_train_loader):
-    print(batch[0])
+    # print(batch[0])
     ctr += 1
     img = batch[0]
     s,ss = normalize(img)
     # print(s.size())
+    # print(s)
+    # print(s.size())
     # print(ss.size())
     mean += s
     mean_sq += ss
-    break
+    # break
+    
+for batch in tqdm(unlabeled_train_loader):
+    # print(batch[0])
+    ctr += 1
+    img = batch[0]
+    s,ss = normalize(img)
+    # print(s.size())
+    # print(s)
+    # print(s.size())
+    # print(ss.size())
+    mean += s
+    mean_sq += ss
 
 print(mean/ctr, mean_sq/ctr)
 
