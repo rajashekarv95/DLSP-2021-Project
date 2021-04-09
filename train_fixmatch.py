@@ -39,6 +39,7 @@ def main():
     parser.add_argument('--train-from-start', type= int, default= 1)
     parser.add_argument('--dataset-folder', type= str, default= "/dataset")
     parser.add_argument('--learning-rate', type = float, default= 0.01)
+    parser.add_argument('--threshold', type = float, default= 0.5)
     args = parser.parse_args()
 
 
@@ -49,7 +50,7 @@ def main():
     n_epochs = args.num_epochs
     n_steps = args.num_steps
     num_classes = 800
-    threshold = 0.6
+    threshold = args.threshold
     learning_rate = args.learning_rate
     momentum = 0.9
     lamd = 1
@@ -116,6 +117,8 @@ def main():
     model.train()
     for epoch in tqdm(range(n_epochs)):
         loss_epoch = 0.0
+        loss_lab_epoch = 0.0
+        loss_unlab_epoch = 0.0
         for batch_idx in tqdm(range(n_steps)):
             try:
                 img_lab, targets_lab = labeled_iter.next()
@@ -183,6 +186,8 @@ def main():
 
             # print("Total loss: ", loss_total)
             loss_epoch += loss_total
+            loss_lab_epoch += loss_labeled
+            loss_unlab_epoch += loss_unlabeled
 
             optimizer.zero_grad()
             loss_total.backward()
@@ -190,7 +195,9 @@ def main():
 
 
             # break
-        print(f"Epoch number: {epoch}, loss: {loss_epoch/(n_steps * batch_size_labeled)}", flush= True)
+        print(f"Epoch number: {epoch}, loss: {loss_epoch/(n_steps * batch_size_labeled)}, \
+            loss lab: {loss_lab_epoch/(n_steps * batch_size_labeled)},\
+            loss unlab: {loss_unlab_epoch/(n_steps * batch_size_labeled)}", flush= True)
         torch.save(model.state_dict(), checkpoint_path)
         model.eval()
         with torch.no_grad():
