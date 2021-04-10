@@ -142,6 +142,12 @@ def main():
         
         unlabeled_iter = iter(unlabeled_train_loader)
 
+        optimizer = torch.optim.SGD(model.parameters(), 
+                                lr = learning_rate,
+                                momentum= momentum,
+                                nesterov= True,
+                                weight_decay= weight_decay)
+
         for batch_idx in tqdm(range(n_steps)):
             try:
                 img_lab, targets_lab = labeled_iter.next()
