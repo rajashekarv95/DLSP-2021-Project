@@ -119,17 +119,17 @@ def main():
             print("Restoring model from checkpoint")
 
     # if torch.cuda.device_count() > 1:
-    print("Let's use", torch.cuda.device_count(), "GPUs!")
-    model = torch.nn.DataParallel(model)
+    # print("Let's use", torch.cuda.device_count(), "GPUs!")
+    # model = torch.nn.DataParallel(model)
 
     model = model.to(device)
     
 
-    # optimizer = torch.optim.SGD(model.parameters(), 
-    #                             lr = learning_rate,
-    #                             momentum= momentum,
-    #                             nesterov= True)
-    optimizer = torch.optim.Adam(model.parameters(), lr= learning_rate)
+    optimizer = torch.optim.SGD(model.parameters(), 
+                                lr = learning_rate,
+                                momentum= momentum,
+                                nesterov= True)
+    # optimizer = torch.optim.Adam(model.parameters(), lr= learning_rate)
 
     model.train()
     for epoch in tqdm(range(n_epochs)):
@@ -219,7 +219,7 @@ def main():
             loss lab: {loss_lab_epoch/(n_steps)},\
             loss unlab: {loss_unlab_epoch/(n_steps)}", flush= True)
         
-        torch.save(model.module.state_dict(), checkpoint_path)
+        torch.save(model.state_dict(), checkpoint_path)
         model.eval()
         with torch.no_grad():
             val_loss = 0
