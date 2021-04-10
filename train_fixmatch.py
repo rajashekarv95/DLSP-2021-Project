@@ -46,6 +46,7 @@ def main():
     parser.add_argument('--mu', type= int, default= 7)
     parser.add_argument('--lambd', type= int, default= 1)
     parser.add_argument('--momentum', type= float, default= 0.9)
+    parser.add_argument('--weight-decay', type= float, default= 0.001)
     args = parser.parse_args()
 
     print(torchvision.__version__, flush= True)
@@ -62,6 +63,7 @@ def main():
     momentum = args.momentum
     lamd = args.lambd
     tau = 0.95
+    weight_decay = args.weight_decay
     checkpoint_path = args.checkpoint_path
     train_from_start = args.train_from_start
 
@@ -128,7 +130,8 @@ def main():
     optimizer = torch.optim.SGD(model.parameters(), 
                                 lr = learning_rate,
                                 momentum= momentum,
-                                nesterov= True)
+                                nesterov= True,
+                                weight_decay= weight_decay)
     # optimizer = torch.optim.Adam(model.parameters(), lr= learning_rate)
 
     model.train()
