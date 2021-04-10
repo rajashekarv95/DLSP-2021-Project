@@ -245,6 +245,7 @@ def main():
                 val_size += 1
                 # break
         print(f"Val loss: {val_loss/val_size}, Accuracy: {(100 * correct / total):.2f}%", flush= True)
+        model.train()
 
         # break
 
