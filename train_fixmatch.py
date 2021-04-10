@@ -112,15 +112,18 @@ def main():
 
     # model = torchvision.models.wide_resnet50_2(pretrained= False, num_classes = num_classes)
     model = resnet18(pretrained=False, num_classes = 800)
-    # if torch.cuda.device_count() > 1:
-    #     print("Let's use", torch.cuda.device_count(), "GPUs!")
-    #     model = torch.nn.DataParallel(model)
 
-    model = model.to(device)
     if train_from_start == 0:
         if os.path.exists(checkpoint_path):
             model.load_state_dict(torch.load(checkpoint_path))
             print("Restoring model from checkpoint")
+
+    # if torch.cuda.device_count() > 1:
+    print("Let's use", torch.cuda.device_count(), "GPUs!")
+    model = torch.nn.DataParallel(model)
+
+    model = model.to(device)
+    
 
     # optimizer = torch.optim.SGD(model.parameters(), 
     #                             lr = learning_rate,
@@ -215,7 +218,8 @@ def main():
         print(f"Epoch number: {epoch}, loss: {loss_epoch/(n_steps)}, \
             loss lab: {loss_lab_epoch/(n_steps)},\
             loss unlab: {loss_unlab_epoch/(n_steps)}", flush= True)
-        torch.save(model.state_dict(), checkpoint_path)
+        
+        torch.save(model.module.state_dict(), checkpoint_path)
         model.eval()
         with torch.no_grad():
             val_loss = 0
