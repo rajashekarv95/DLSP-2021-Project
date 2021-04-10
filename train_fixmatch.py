@@ -112,9 +112,9 @@ def main():
 
     # model = torchvision.models.wide_resnet50_2(pretrained= False, num_classes = num_classes)
     model = resnet18(pretrained=False, num_classes = 800)
-    if torch.cuda.device_count() > 1:
-        print("Let's use", torch.cuda.device_count(), "GPUs!")
-        model = torch.nn.DataParallel(model)
+    # if torch.cuda.device_count() > 1:
+    #     print("Let's use", torch.cuda.device_count(), "GPUs!")
+    #     model = torch.nn.DataParallel(model)
 
     model = model.to(device)
     if train_from_start == 0:
