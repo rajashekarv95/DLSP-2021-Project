@@ -106,11 +106,15 @@ def main():
     '''
 
     labeled_iter = iter(labeled_train_loader)
-    unlabeled_train_loader = unlabeled_train_loader[:250]
+    # unlabeled_train_loader = unlabeled_train_loader[:250]
     unlabeled_iter = iter(unlabeled_train_loader)
 
     # model = torchvision.models.wide_resnet50_2(pretrained= False, num_classes = num_classes)
     model = resnet18(pretrained=False, num_classes = 800)
+    if torch.cuda.device_count() > 1:
+        print("Let's use", torch.cuda.device_count(), "GPUs!")
+        model = nn.DataParallel(model)
+
     model = model.to(device)
     if train_from_start == 0:
         if os.path.exists(checkpoint_path):
@@ -127,6 +131,9 @@ def main():
         loss_epoch = 0.0
         loss_lab_epoch = 0.0
         loss_unlab_epoch = 0.0
+        
+        unlabeled_iter = iter(unlabeled_train_loader)
+        
         for batch_idx in tqdm(range(n_steps)):
             try:
                 img_lab, targets_lab = labeled_iter.next()
