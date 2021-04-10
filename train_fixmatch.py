@@ -44,6 +44,7 @@ def main():
     parser.add_argument('--learning-rate', type = float, default= 0.01)
     parser.add_argument('--threshold', type = float, default= 0.5)
     parser.add_argument('--mu', type= int, default= 7)
+    parser.add_argument('--lambda', type= int, default= 1)
     args = parser.parse_args()
 
     print(torchvision.__version__, flush= True)
