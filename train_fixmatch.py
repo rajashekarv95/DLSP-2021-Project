@@ -45,6 +45,7 @@ def main():
     parser.add_argument('--threshold', type = float, default= 0.5)
     parser.add_argument('--mu', type= int, default= 7)
     parser.add_argument('--lambd', type= int, default= 1)
+    parser.add_argument('--momentum', type= float, default= 0.9)
     args = parser.parse_args()
 
     print(torchvision.__version__, flush= True)
@@ -58,7 +59,7 @@ def main():
     num_classes = 800
     threshold = args.threshold
     learning_rate = args.learning_rate
-    momentum = 0.9
+    momentum = args.momentum
     lamd = args.lambd
     tau = 0.95
     checkpoint_path = args.checkpoint_path
@@ -133,7 +134,7 @@ def main():
         loss_unlab_epoch = 0.0
         
         unlabeled_iter = iter(unlabeled_train_loader)
-        
+
         for batch_idx in tqdm(range(n_steps)):
             try:
                 img_lab, targets_lab = labeled_iter.next()
