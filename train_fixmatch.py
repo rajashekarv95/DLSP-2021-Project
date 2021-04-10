@@ -114,7 +114,7 @@ def main():
     model = resnet18(pretrained=False, num_classes = 800)
     if torch.cuda.device_count() > 1:
         print("Let's use", torch.cuda.device_count(), "GPUs!")
-        model = nn.DataParallel(model)
+        model = torch.nn.DataParallel(model)
 
     model = model.to(device)
     if train_from_start == 0:
