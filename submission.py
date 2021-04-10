@@ -12,10 +12,10 @@ email_address = "rv2138@nyu.edu"
 def get_model():
     return resnet18(pretrained=False, num_classes = 800)
 
-cifar10_mean = (0.4914, 0.4822, 0.4465)
-cifar10_std = (0.2471, 0.2435, 0.2616)
+mean = (0.4836, 0.4527, 0.4011)
+std = (0.3065, 0.2728, 0.2355)
 
 eval_transform = transforms.Compose([
         transforms.ToTensor(),
-        transforms.Normalize(mean=cifar10_mean, std=cifar10_std)
+        transforms.Normalize(mean=mean, std=std)
     ])
