@@ -235,7 +235,7 @@ def main():
                 correct += (predicted == labels).sum().item()
                 val_size += 1
                 # break
-            print(f"Val loss: {val_loss/val_size}, Accuracy: {(100 * correct / total):.2f}%", flush= True)
+        print(f"Val loss: {val_loss/val_size}, Accuracy: {(100 * correct / total):.2f}%", flush= True)
 
         # break
 
