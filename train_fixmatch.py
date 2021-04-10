@@ -210,12 +210,18 @@ def main():
         with torch.no_grad():
             val_loss = 0
             val_size = 0
+            total = 0
+            correct = 0
             for batch in val_loader:
                 logits_val = model(batch[0].to(device))
-                val_loss += F.cross_entropy(logits_val, batch[1].to(device))
+                labels = batch[1].to(device)
+                val_loss += F.cross_entropy(logits_val, labels)
+                _, predicted = torch.max(logits_val.data, 1)
+                total += labels.size(0)
+                correct += (predicted == labels).sum().item()
                 val_size += 1
                 # break
-            print("Val loss: ", val_loss/val_size, flush= True)
+            print(f"Val loss: {val_loss/val_size}, Accuracy: {(100 * correct / total):.2f}%", flush= True)
 
         # break
 
