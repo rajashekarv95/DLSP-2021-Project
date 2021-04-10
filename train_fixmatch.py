@@ -59,7 +59,7 @@ def main():
     threshold = args.threshold
     learning_rate = args.learning_rate
     momentum = 0.9
-    lamd = 1
+    lamd = args.lambda
     tau = 0.95
     checkpoint_path = args.checkpoint_path
     train_from_start = args.train_from_start
