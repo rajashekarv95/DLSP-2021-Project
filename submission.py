@@ -3,14 +3,14 @@
 from torchvision import models, transforms
 import torch
 from models.resnet import wide_resnet50_2
-from models.resnet import resnet34
+from models.resnet import resnet34, resnet18
 
 team_id = 1
 team_name = "Self Supervised Learners"
 email_address = "rv2138@nyu.edu"
 
 def get_model():
-    return resnet34(pretrained=False, num_classes = 800)
+    return resnet18(pretrained=False, num_classes = 800)
 
 cifar10_mean = (0.4914, 0.4822, 0.4465)
 cifar10_std = (0.2471, 0.2435, 0.2616)
