@@ -122,10 +122,11 @@ def main():
             model.load_state_dict(torch.load(checkpoint_path))
             print("Restoring model from checkpoint")
 
-    optimizer = torch.optim.SGD(model.parameters(), 
-                                lr = learning_rate,
-                                momentum= momentum,
-                                nesterov= True)
+    # optimizer = torch.optim.SGD(model.parameters(), 
+    #                             lr = learning_rate,
+    #                             momentum= momentum,
+    #                             nesterov= True)
+    optimizer = torch.optim.Adam(model.parameters(), lr= learning_rate)
 
     model.train()
     for epoch in tqdm(range(n_epochs)):
