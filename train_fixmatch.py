@@ -106,6 +106,7 @@ def main():
     '''
 
     labeled_iter = iter(labeled_train_loader)
+    unlabeled_train_loader = unlabeled_train_loader[:250]
     unlabeled_iter = iter(unlabeled_train_loader)
 
     # model = torchvision.models.wide_resnet50_2(pretrained= False, num_classes = num_classes)
