@@ -127,14 +127,14 @@ def main():
     model = model.to(device)
     
 
-    # optimizer = torch.optim.SGD(model.parameters(), 
-    #                             lr = learning_rate,
-    #                             momentum= momentum,
-    #                             nesterov= True,
-    #                             weight_decay= weight_decay)
-    optimizer = torch.optim.Adam(model.parameters(), 
-                                lr= learning_rate,
+    optimizer = torch.optim.SGD(model.parameters(), 
+                                lr = learning_rate,
+                                momentum= momentum,
+                                nesterov= True,
                                 weight_decay= weight_decay)
+    # optimizer = torch.optim.Adam(model.parameters(), 
+    #                             lr= learning_rate,
+    #                             weight_decay= weight_decay)
 
     model.train()
     for epoch in tqdm(range(n_epochs)):
