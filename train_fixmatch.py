@@ -113,7 +113,7 @@ def main():
     unlabeled_iter = iter(unlabeled_train_loader)
 
     # model = torchvision.models.wide_resnet50_2(pretrained= False, num_classes = num_classes)
-    model = resnet18(pretrained=False, num_classes = 800)
+    model = resnet34(pretrained=False, num_classes = 800)
 
     if train_from_start == 0:
         if os.path.exists(checkpoint_path):
