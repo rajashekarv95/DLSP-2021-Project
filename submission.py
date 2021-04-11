@@ -5,7 +5,7 @@ import torch
 from models.resnet import wide_resnet50_2
 from models.resnet import resnet34, resnet18
 
-team_id = 1
+team_id = 12
 team_name = "Self Supervised Learners"
 email_address = "rv2138@nyu.edu"
 
