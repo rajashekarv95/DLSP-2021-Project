@@ -23,6 +23,8 @@ from transforms import TransformFixMatch, get_transforms
 from models.resnet import wide_resnet50_2
 from models.resnet import resnet34, resnet18
 
+from utils.misc import Average
+
 random.seed(10)
 np.random.seed(10)
 torch.manual_seed(10)
@@ -30,6 +32,23 @@ if torch.cuda.is_available():
     torch.cuda.manual_seed(10)
 
 torch.backends.cudnn.deterministic=True
+
+def get_cosine_schedule_with_warmup(optimizer,
+                                    num_warmup_steps,
+                                    num_training_steps,
+                                    num_cycles=7./16.,
+                                    last_epoch=-1):
+    def _lr_lambda(current_step):
+        if current_step < num_warmup_steps:
+            return float(current_step) / float(max(1, num_warmup_steps))
+        no_progress = float(current_step - num_warmup_steps) / \
+            float(max(1, num_training_steps - num_warmup_steps))
+        return max(0., math.cos(math.pi * num_cycles * no_progress))
+
+    return LambdaLR(optimizer, _lr_lambda, last_epoch)
+
+def save_checkpoint(state, checkpoint_path):
+    torch.save(state, checkpoint_path)
 
 def main():
     #TODO: Get args
@@ -87,68 +106,48 @@ def main():
     val_loader = DataLoader(val_dataset, batch_size= batch_size_val, shuffle= False)
 
 
-    #Uncomment to generate some weak and strong augs
-    #Set batch size = 1
-    '''
-    for batch in unlabeled_train_loader:
-        w_img = batch[0][0]
-        w_img = w_img[0]
-        s_img = batch[0][1]
-        s_img = s_img[0]
-        print("Weak: ", batch[0][0].size())
-        print("Strong: ", batch[0][1].size())
-        print("Label: ", batch[1])
-        plt.figure()
-        plt.imshow(s_img.permute(1, 2, 0))
-        plt.savefig('./test_augmentations/strong.png')
-
-        plt.figure()
-        plt.imshow(w_img.permute(1, 2, 0))
-        plt.savefig('./test_augmentations/weak.png')
-        break
-    '''
 
     labeled_iter = iter(labeled_train_loader)
-    # unlabeled_train_loader = unlabeled_train_loader[:250]
     unlabeled_iter = iter(unlabeled_train_loader)
 
     # model = torchvision.models.wide_resnet50_2(pretrained= False, num_classes = num_classes)
     model = resnet18(pretrained=False, num_classes = 800)
-
-    if train_from_start == 0:
-        if os.path.exists(checkpoint_path):
-            model.load_state_dict(torch.load(checkpoint_path))
-            print("Restoring model from checkpoint")
-
-    # if torch.cuda.device_count() > 1:
-    # print("Let's use", torch.cuda.device_count(), "GPUs!")
-    # model = torch.nn.DataParallel(model)
-
-    model = model.to(device)
-    
 
     optimizer = torch.optim.SGD(model.parameters(), 
                                 lr = learning_rate,
                                 momentum= momentum,
                                 nesterov= True,
                                 weight_decay= weight_decay)
-    # optimizer = torch.optim.Adam(model.parameters(), 
-    #                             lr= learning_rate,
-    #                             weight_decay= weight_decay)
+
+    scheduler = get_cosine_schedule_with_warmup(optimizer, 0, num_training_steps= n_epochs * n_steps)
+    
+    model = model.to(device)
+
+    start_epoch = 0
+
+    if train_from_start == 0:
+        assert os.path.isfile(checkpoint_path), "Error: no checkpoint directory found!"
+        print("Restoring model from checkpoint")
+        # args.out = os.path.dirname(args.resume)
+        checkpoint = torch.load(checkpoint_path)
+        # best_acc = checkpoint['best_acc']
+        start_epoch = checkpoint['epoch'] - 1
+        model.load_state_dict(checkpoint['state_dict'])
+        optimizer.load_state_dict(checkpoint['optimizer'])
+        scheduler.load_state_dict(checkpoint['scheduler'])
+
+    # if torch.cuda.device_count() > 1:
+    # print("Let's use", torch.cuda.device_count(), "GPUs!")
+    # model = torch.nn.DataParallel(model)
+    
 
     model.train()
-    for epoch in tqdm(range(n_epochs)):
-        loss_epoch = 0.0
-        loss_lab_epoch = 0.0
-        loss_unlab_epoch = 0.0
-        
-        # unlabeled_iter = iter(unlabeled_train_loader)
+    losses = Average()
+    losses_l = Average()
+    losses_u = Average()
+    mask_probs = Average()
 
-        # optimizer = torch.optim.SGD(model.parameters(), 
-        #                         lr = learning_rate,
-        #                         momentum= momentum,
-        #                         nesterov= True,
-        #                         weight_decay= weight_decay)
+    for epoch in tqdm(range(start_epoch, n_epochs)):
 
         for batch_idx in tqdm(range(n_steps)):
             try:
@@ -172,14 +171,7 @@ def main():
             img_weak = img_weak.to(device)
             img_strong = img_strong.to(device)
 
-            # print("Weak: ", img_weak.size())
-            # print("Strong: ", img_strong.size())
-            # print("Lab: ", img_lab.size())
-            # print(model(img_lab).size())
-            # print(model(img_weak).size())
-            # print(model(img_strong).size())
             img_cat = torch.cat((img_lab, img_weak, img_strong), dim = 0)
-            # print(img_cat.size())
             logits_cat = model(img_cat)
             logits_lab = logits_cat[:batch_size_labeled]
             # print(logits_lab.size())
@@ -187,24 +179,11 @@ def main():
             # print(logits_unlab)
 
             logits_weak, logits_strong = torch.chunk(logits_unlab, chunks= 2, dim = 0)
-            # print(logits_strong.size(), logits_weak.size())
-            # print(logits_weak)
-            # print(logits_strong)
+
             pseudo_label = torch.softmax(logits_weak.detach()/tau, dim= 1)
             max_probs, targets_unlab = torch.max(pseudo_label, dim= 1)
             mask = max_probs.ge(threshold).float()
             
-            # mask = 1 * torch.ge(torch.softmax(logits_weak, dim= 1), threshold)
-            # mask = torch.sum(mask, dim = 1)
-            # print(mask.size())
-            # print(torch.sum(mask, dim = 1))
-            # targets_unlab = torch.argmax(logits_weak, dim = 1)
-            # print()
-            # print(targets_unlab)
-            # print(torch.sum(targets_unlab, dim = 1))
-            # print("logits strong: ", logits_strong.size())
-            # print("Targets unlab: ", targets_unlab.size())
-            # print("Mask: ", mask.size())
             loss_labeled = F.cross_entropy(logits_lab, targets_lab, reduction='mean')
 
             # print("CE: ", F.cross_entropy(logits_strong, targets_unlab, reduction= 'none').size())
@@ -216,21 +195,35 @@ def main():
             loss_total = loss_labeled + lamd * loss_unlabeled
 
             # print("Total loss: ", loss_total)
-            loss_epoch += loss_total
-            loss_lab_epoch += loss_labeled
-            loss_unlab_epoch += loss_unlabeled
+            # loss_epoch += loss_total
+            # loss_lab_epoch += loss_labeled
+            # loss_unlab_epoch += loss_unlabeled
+            losses.update(loss_total.item())
+            losses_l.update(loss_labeled.item())
+            losses_u.update(loss_unlabeled.item())
+            mask_probs.update(mask.mean().item())
 
             optimizer.zero_grad()
             loss_total.backward()
             optimizer.step()
+            scheduler.step()
 
 
             # break
-        print(f"Epoch number: {epoch}, loss: {loss_epoch/(n_steps)}, \
-            loss lab: {loss_lab_epoch/(n_steps)},\
-            loss unlab: {loss_unlab_epoch/(n_steps)}", flush= True)
+            print(f"Epoch number: {epoch}, loss: {losses.avg()}, \
+                loss lab: {losses_l.avg()},\
+                loss unlab: {losses_u.avg()},\
+                mask: {mask_probs.avg()}", flush= True)
         
         torch.save(model.state_dict(), checkpoint_path)
+
+        save_checkpoint({
+                'epoch': epoch + 1,
+                'state_dict': model.state_dict(),
+                'optimizer': optimizer.state_dict(),
+                'scheduler': scheduler.state_dict(),
+            }, checkpoint_path)
+
         model.eval()
         with torch.no_grad():
             val_loss = 0
