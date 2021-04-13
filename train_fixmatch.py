@@ -210,10 +210,10 @@ def main():
 
 
             # break
-            print(f"Epoch number: {epoch}, loss: {losses.avg()}, \
-                loss lab: {losses_l.avg()},\
-                loss unlab: {losses_u.avg()},\
-                mask: {mask_probs.avg()}", flush= True)
+            print(f"Epoch number: {epoch}, loss: {losses.avg}, \
+                loss lab: {losses_l.avg},\
+                loss unlab: {losses_u.avg},\
+                mask: {mask_probs.avg}", flush= True)
         
         torch.save(model.state_dict(), checkpoint_path)
 
