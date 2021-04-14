@@ -18,16 +18,6 @@ singularity exec --nv \
             /scratch/work/public/singularity/cuda11.0-cudnn8-devel-ubuntu18.04.sif \
             bash -c "                                                                                                                                                                                      
 source /ext3/env.sh                                                                                                                                                                                        
-python train_fixmatch.py --checkpoint-path /scratch/rv2138/checkpoints/model.pth.tar \                                                                                                   
---batch-size 64 \                                                                                                                                                                                          
---num-epochs 120 \                                                                                                                                                                                         
---num-steps 400 \                                                                                                                                                                                          
---train-from-start 1 \                                                                                                                                                                                     
---dataset-folder /dataset \                                                                                                                                                                                
---learning-rate 0.03 \                                                                                                                                                                                     
---mu 7 \                                                                                                                                                                                                   
---threshold 0.7 \                                                                                                                                                                                          --lambd 10 \                                                                                                                                                                                               
---momentum 0.9 \                                                                                                                                                                                           
---weight-decay 0.0001                                                                                                                                                                                      
+python train_fixmatch.py --checkpoint-path /scratch/rv2138/checkpoints/model.pth.tar                                                                                                                                                                           
 "
 
