@@ -24,7 +24,7 @@ python3 train_fixmatch.py --checkpoint-path /scratch/rv2138/checkpoints/model.pt
 --batch-size 64 \
 --num-epochs 120 \
 --num-steps 400 \
---train-from-start 0 \
+--train-from-start 1 \
 --dataset-folder /dataset \
 --learning-rate 0.03 \
 --mu 7 \
