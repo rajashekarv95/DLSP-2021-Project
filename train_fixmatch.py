@@ -210,10 +210,11 @@ def main():
 
 
             # break
-            print(f"Epoch number: {epoch}, loss: {losses.avg}, \
-                loss lab: {losses_l.avg},\
-                loss unlab: {losses_u.avg},\
-                mask: {mask_probs.avg}", flush= True)
+            if batch_idx % 25 == 0:
+                print(f"Epoch number: {epoch}, loss: {losses.avg}, \
+                    loss lab: {losses_l.avg},\
+                    loss unlab: {losses_u.avg},\
+                    mask: {mask_probs.avg}", flush= True)
             # print(optimizer.param_groups[0]['lr'])
         
         torch.save(model.state_dict(), checkpoint_path)
