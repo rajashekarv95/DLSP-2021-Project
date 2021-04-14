@@ -13,15 +13,10 @@ class TransformFixMatch(object):
         std = (0.3065, 0.2728, 0.2355)
         self.weak = transforms.Compose([
             transforms.RandomHorizontalFlip(),
-            # transforms.RandomCrop(size=32,
-            #                       padding=int(32*0.125),
-            #                       padding_mode='reflect')
+            transforms.RandomResizedCrop(size = 96, scale = (0.75, 0.8), ratio= (1.0, 1.0))
                                   ])
         self.strong = transforms.Compose([
             transforms.RandomHorizontalFlip(),
-            # transforms.RandomCrop(size=32,
-            #                       padding=int(32*0.125),
-            #                       padding_mode='reflect'),
             RandAugmentMC(n=2, m=10)])
         self.normalize = transforms.Compose([
             transforms.ToTensor(),
@@ -38,6 +33,7 @@ def get_transforms():
     cifar10_std = (0.3065, 0.2728, 0.2355)
     transform_labeled = transforms.Compose([
             transforms.RandomHorizontalFlip(),
+            transforms.RandomResizedCrop(size = 96, scale = (0.75, 0.8), ratio= (1.0, 1.0)),
             # transforms.RandomCrop(size=32,
             #                     padding=int(32*0.125),
             #                     padding_mode='reflect'),
