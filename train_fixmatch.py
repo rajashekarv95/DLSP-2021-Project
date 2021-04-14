@@ -214,6 +214,7 @@ def main():
                 loss lab: {losses_l.avg},\
                 loss unlab: {losses_u.avg},\
                 mask: {mask_probs.avg}", flush= True)
+            print(optimizer.param_groups[0]['lr'])
         
         torch.save(model.state_dict(), checkpoint_path)
 
