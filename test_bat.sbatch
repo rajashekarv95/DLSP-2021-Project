@@ -30,4 +30,4 @@ python train_fixmatch.py --checkpoint-path /scratch/rv2138/checkpoints/model.pth
 --lambd 10 \                                                                                                                                                                                                
 --momentum 0.9 \                                                                                                                                                                                            
 --weight-decay 0.0001   
-""
+"
