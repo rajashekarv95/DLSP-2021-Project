@@ -20,6 +20,5 @@ singularity exec --nv \
 /scratch/work/public/singularity/cuda11.0-cudnn8-devel-ubuntu18.04.sif \
 bash -c "
 source /ext3/env.sh
-python train_fixmatch.py --checkpoint-path /scratch/rv2138/checkpoints/model.pth.tar \ 
---num-epochs 1
+python train_fixmatch.py --checkpoint-path /scratch/rv2138/checkpoints/model.pth.tar --num-epochs 1
 "
