@@ -10,7 +10,9 @@
 #SBATCH --output=./out/train_fm_%j.out                                                                                                                                                                     
 #SBATCH --error=./err/train_fm_%j.err 
 
-module purge
+/share/apps/local/bin/p2pBandwidthLatencyTest > /dev/null 2>&1
+
+set -x 
 
 singularity exec --nv \
             --overlay /scratch/rv2138/env/conda_new.ext3:ro \
