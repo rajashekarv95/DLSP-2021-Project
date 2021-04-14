@@ -138,3 +138,6 @@ dataset/
 /err/
 todo.py
 /submissions/
+/augmentations/
+model.pth 
+test_augment.py
