@@ -19,7 +19,7 @@ singularity exec --nv \
 --overlay /scratch/rv2138/student_dataset.sqsh:ro \
 /scratch/work/public/singularity/cuda11.0-cudnn8-devel-ubuntu18.04.sif \
 bash -c "source /ext3/env.sh
-python train_fixmatch.py --checkpoint-path /scratch/rv2138/checkpoints/model.pth.tar \
+python3 train_fixmatch.py --checkpoint-path /scratch/rv2138/checkpoints/model.pth.tar \
 --num-epochs 1 \                                                   
 --batch-size 64 \                                                                                                                                                                                           
 --num-epochs 120 \                                                                                                                                                                                          
