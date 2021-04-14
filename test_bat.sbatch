@@ -28,7 +28,7 @@ python3 train_fixmatch.py --checkpoint-path /scratch/rv2138/checkpoints/model.pt
 --dataset-folder /dataset \
 --learning-rate 0.03 \
 --mu 7 \
--threshold 0.7 \
+--threshold 0.7 \
 --lambd 10 \
 --momentum 0.9 \
 --weight-decay 0.0001
