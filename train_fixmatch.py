@@ -68,7 +68,6 @@ def main():
     parser.add_argument('--weight-decay', type= float, default= 0.001)
     args = parser.parse_args()
 
-    print(torchvision.__version__, flush= True)
     dataset_folder = args.dataset_folder
     batch_size_labeled = args.batch_size
     mu = args.mu
@@ -136,9 +135,9 @@ def main():
         optimizer.load_state_dict(checkpoint['optimizer'])
         scheduler.load_state_dict(checkpoint['scheduler'])
 
-    # if torch.cuda.device_count() > 1:
-    # print("Let's use", torch.cuda.device_count(), "GPUs!")
-    # model = torch.nn.DataParallel(model)
+    if torch.cuda.device_count() > 1:
+        print("Let's use", torch.cuda.device_count(), "GPUs!")
+        model = torch.nn.DataParallel(model)
     
 
     model.train()
