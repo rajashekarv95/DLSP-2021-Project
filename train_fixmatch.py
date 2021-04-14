@@ -217,7 +217,6 @@ def main():
                     mask: {mask_probs.avg}", flush= True)
             # print(optimizer.param_groups[0]['lr'])
         
-        torch.save(model.state_dict(), checkpoint_path)
 
         save_checkpoint({
                 'epoch': epoch + 1,
