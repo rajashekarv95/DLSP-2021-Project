@@ -199,7 +199,7 @@ def main():
 			z_b_norm = (z_b - (torch.mean(z_b, dim = 1, keepdim=True))) / torch.std(z_b, dim = 1, keepdim=True)
 
 			c = torch.matmul(z_a_norm.T, z_b_norm)
-			c_diff = torch.pow(c - torch.eye(c.size()[0]), 2)
+			c_diff = torch.pow(c - torch.eye(c.size()[0]).to(device), 2)
 
 			loss = torch.sum(torch.mul(off_diagonal(c_diff), lambd))
 
