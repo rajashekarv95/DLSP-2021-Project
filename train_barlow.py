@@ -114,7 +114,7 @@ def main():
 	parser.add_argument('--learning-rate', type = float, default= 0.01)
 	parser.add_argument('--threshold', type = float, default= 0.5)
 	parser.add_argument('--mu', type= int, default= 7)
-	parser.add_argument('--lambd', type= int, default= 0.005)
+	parser.add_argument('--lambd', type= float, default= 0.005)
 	parser.add_argument('--momentum', type= float, default= 0.9)
 	parser.add_argument('--weight-decay', type= float, default= 1.5*1e-6)
 	args = parser.parse_args()
