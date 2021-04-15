@@ -66,6 +66,7 @@ def main():
     parser.add_argument('--lambd', type= int, default= 1)
     parser.add_argument('--momentum', type= float, default= 0.9)
     parser.add_argument('--weight-decay', type= float, default= 0.001)
+    parser.add_argument('--layers', type= int, default= 18)
     args = parser.parse_args()
 
     dataset_folder = args.dataset_folder
@@ -84,6 +85,7 @@ def main():
     weight_decay = args.weight_decay
     checkpoint_path = args.checkpoint_path
     train_from_start = args.train_from_start
+    n_layers = args.layers
 
     if torch.cuda.is_available():
         device = torch.device("cuda")
@@ -110,7 +112,13 @@ def main():
     unlabeled_iter = iter(unlabeled_train_loader)
 
     # model = torchvision.models.wide_resnet50_2(pretrained= False, num_classes = num_classes)
-    model = resnet18(pretrained=False, num_classes = 800)
+    if n_layers == 18:
+        model = resnet18(pretrained=False, num_classes = 800)
+    elif layers == 34:
+        model = resnet34(pretrained=False, num_classes = 800)
+    else:
+        raise ValueError("Wrong value passed for layers")
+
 
     optimizer = torch.optim.SGD(model.parameters(), 
                                 lr = learning_rate,
