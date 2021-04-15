@@ -114,16 +114,15 @@ def main():
 	parser.add_argument('--learning-rate', type = float, default= 0.01)
 	parser.add_argument('--threshold', type = float, default= 0.5)
 	parser.add_argument('--mu', type= int, default= 7)
-	parser.add_argument('--lambd', type= int, default= 1)
+	parser.add_argument('--lambd', type= int, default= 0.005)
 	parser.add_argument('--momentum', type= float, default= 0.9)
-	parser.add_argument('--weight-decay', type= float, default= 0.001)
+	parser.add_argument('--weight-decay', type= float, default= 1.5*1e-6)
 	args = parser.parse_args()
 
 	dataset_folder = args.dataset_folder
 	batch_size_labeled = args.batch_size
 	mu = args.mu
 	batch_size_unlabeled = mu * args.batch_size
-	batch_size_val = 512 #5120
 	n_epochs = args.num_epochs
 	n_steps = args.num_steps
 	num_classes = 800
@@ -131,7 +130,6 @@ def main():
 	learning_rate = args.learning_rate
 	momentum = args.momentum
 	lambd = args.lambd
-	tau = 0.95
 	weight_decay = args.weight_decay
 	checkpoint_path = args.checkpoint_path
 	train_from_start = args.train_from_start
@@ -215,8 +213,7 @@ def main():
 			# scheduler.step()
 
 			if batch_idx % 25 == 0:
-				print('Loss', loss.item())
-				print(f"Epoch number: {epoch}, loss: {losses.avg}", flush= True)
+				print(f"Epoch number: {epoch}, loss_avg: {losses.avg}, loss: {loss.item()}", flush= True)
 		
 		save_checkpoint({
 				'epoch': epoch + 1,
