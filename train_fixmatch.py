@@ -86,7 +86,7 @@ def main():
     train_from_start = args.train_from_start
 
     if torch.cuda.is_available():
-        device = torch.device("cuda:0")
+        device = torch.device("cuda")
     else:
         device = torch.device("cpu")
 
@@ -100,9 +100,9 @@ def main():
                                             
     val_dataset = CustomDataset(root= dataset_folder, split = "val", transform = val_transform)
 
-    labeled_train_loader = DataLoader(labeled_train_dataset, batch_size= batch_size_labeled, shuffle= True)
-    unlabeled_train_loader = DataLoader(unlabeled_train_dataset, batch_size= batch_size_unlabeled, shuffle= True)
-    val_loader = DataLoader(val_dataset, batch_size= batch_size_val, shuffle= False)
+    labeled_train_loader = DataLoader(labeled_train_dataset, batch_size= batch_size_labeled, shuffle= True, num_workers= 4)
+    unlabeled_train_loader = DataLoader(unlabeled_train_dataset, batch_size= batch_size_unlabeled, shuffle= True, num_workers= 4)
+    val_loader = DataLoader(val_dataset, batch_size= batch_size_val, shuffle= False, num_workers= 4)
 
 
 
@@ -119,8 +119,6 @@ def main():
                                 weight_decay= weight_decay)
 
     scheduler = get_cosine_schedule_with_warmup(optimizer, 0, num_training_steps= n_epochs * n_steps)
-    
-    model = model.to(device)
 
     start_epoch = 0
 
@@ -138,6 +136,8 @@ def main():
     if torch.cuda.device_count() > 1:
         print("Let's use", torch.cuda.device_count(), "GPUs!")
         model = torch.nn.DataParallel(model)
+
+    model = model.to(device)
     
 
     model.train()
