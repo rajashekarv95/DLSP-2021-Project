@@ -2,7 +2,7 @@ import numpy as np
 from PIL import Image
 from torchvision import datasets
 from torchvision import transforms
-
+import random 
 from augment.randaugment import RandAugmentMC
 
 
