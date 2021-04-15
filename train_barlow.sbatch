@@ -30,8 +30,8 @@ singularity exec --nv \
 source /ext3/env.sh
 conda activate dev
 python train_barlow.py --checkpoint-path $SCRATCH/checkpoints/model.pth.tar \
---batch-size 64 \
---num-epochs 1 \
+--batch-size 512 \
+--num-epochs 2 \
 --num-steps 1000 \
 --train-from-start 0 \
 --dataset-folder /dataset \
