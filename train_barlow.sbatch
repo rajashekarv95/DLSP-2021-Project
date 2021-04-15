@@ -33,7 +33,7 @@ python train_barlow.py --checkpoint-path $SCRATCH/checkpoints/model.pth.tar \
 --batch-size 512 \
 --num-epochs 2 \
 --num-steps 1000 \
---train-from-start 0 \
+--train-from-start 1 \
 --dataset-folder /dataset \
 --learning-rate 0.001
 "
