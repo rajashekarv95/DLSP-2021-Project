@@ -135,7 +135,7 @@ def main():
 	train_from_start = args.train_from_start
 	
 	if torch.cuda.is_available():
-		device = torch.device("cuda:0")
+		device = torch.device("cuda")
 	else:
 		device = torch.device("cpu")
 
@@ -155,6 +155,9 @@ def main():
 					 weight_decay_filter=exclude_bias_and_norm,
 					 lars_adaptation_filter=exclude_bias_and_norm)
 
+	if torch.cuda.device_count() > 1:
+		print("Let's use", torch.cuda.device_count(), "GPUs!")
+		model = torch.nn.DataParallel(model)
 
 	model = model.to(device)
 
