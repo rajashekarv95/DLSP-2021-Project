@@ -4,6 +4,7 @@ from torchvision import datasets
 from torchvision import transforms
 import random 
 from augment.randaugment import RandAugmentMC
+from PIL import Image, ImageOps, ImageFilter
 
 
 class TransformFixMatch(object):
