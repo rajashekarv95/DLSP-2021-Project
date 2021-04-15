@@ -107,7 +107,7 @@ def main():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--checkpoint-path', type=str, default= "./model.pth")
 	parser.add_argument('--batch-size', type=int, default= 512)
-	parser.add_argument('--num-epochs', type=int, default= 2)
+	parser.add_argument('--num-epochs', type=int, default= 10)
 	parser.add_argument('--num-steps', type=int, default= 1)
 	parser.add_argument('--train-from-start', type= int, default= 1)
 	parser.add_argument('--dataset-folder', type= str, default= "./dataset")

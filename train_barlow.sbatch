@@ -31,7 +31,7 @@ source /ext3/env.sh
 conda activate dev
 python train_barlow.py --checkpoint-path $SCRATCH/checkpoints/model.pth.tar \
 --batch-size 512 \
---num-epochs 2 \
+--num-epochs 10 \
 --num-steps 1000 \
 --train-from-start 1 \
 --dataset-folder /dataset \
