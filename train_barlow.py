@@ -202,7 +202,6 @@ def main():
 			c_diff = torch.pow(c - torch.eye(c.size()[0]).to(device), 2)
 
 			loss = torch.sum(torch.mul(off_diagonal(c_diff), lambd))
-			print('Loss', loss.item())
 
 			losses.update(loss.item())
 			# losses_l.update(loss_labeled.item())
@@ -216,6 +215,7 @@ def main():
 			# scheduler.step()
 
 			if batch_idx % 25 == 0:
+				print('Loss', loss.item())
 				print(f"Epoch number: {epoch}, loss: {losses.avg}", flush= True)
 		
 		save_checkpoint({
