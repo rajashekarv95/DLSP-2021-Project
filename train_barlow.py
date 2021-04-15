@@ -186,7 +186,7 @@ def main():
 		loss_lab_epoch = 0.0
 		loss_unlab_epoch = 0.0
 
-		for batch_idx, batch in enumerate(unlabeled_train_loader):
+		for batch_idx, batch in tqdm(enumerate(unlabeled_train_loader)):
 			y_a = batch[0][0].to(device)
 			y_b = batch[0][1].to(device)
 			y_cat = torch.cat((y_a, y_b), dim = 0)
@@ -202,6 +202,7 @@ def main():
 			c_diff = torch.pow(c - torch.eye(c.size()[0]).to(device), 2)
 
 			loss = torch.sum(torch.mul(off_diagonal(c_diff), lambd))
+			print('Loss', loss.item())
 
 			losses.update(loss.item())
 			# losses_l.update(loss_labeled.item())
