@@ -107,7 +107,7 @@ def main():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--checkpoint-path', type=str, default= "./model.pth")
 	parser.add_argument('--batch-size', type=int, default= 1)
-	parser.add_argument('--num-epochs', type=int, default= 1)
+	parser.add_argument('--num-epochs', type=int, default= 2)
 	parser.add_argument('--num-steps', type=int, default= 1)
 	parser.add_argument('--train-from-start', type= int, default= 1)
 	parser.add_argument('--dataset-folder', type= str, default= "./dataset")
@@ -123,7 +123,7 @@ def main():
 	batch_size_labeled = args.batch_size
 	mu = args.mu
 	batch_size_unlabeled = mu * args.batch_size
-	batch_size_val = 256 #5120
+	batch_size_val = 512 #5120
 	n_epochs = args.num_epochs
 	n_steps = args.num_steps
 	num_classes = 800
@@ -150,7 +150,7 @@ def main():
 	# dataset_folder = dataset_folder = "./dataset" 
 	train_transform, val_transform = get_transforms()
 	unlabeled_train_dataset = CustomDataset(root= dataset_folder, split = "unlabeled", transform = TransformBarlowTwins())
-	unlabeled_train_loader = DataLoader(unlabeled_train_dataset, batch_size= 1, shuffle= True)
+	unlabeled_train_loader = DataLoader(unlabeled_train_dataset, batch_size= 512, shuffle= True)
 
 	model = resnet18(pretrained=False, num_classes = 800)
 	optimizer = LARS(model.parameters(), lr=0, weight_decay=args.weight_decay,
@@ -216,14 +216,12 @@ def main():
 
 			if batch_idx % 25 == 0:
 				print(f"Epoch number: {epoch}, loss: {losses.avg}", flush= True)
-			break
 		
 		save_checkpoint({
 				'epoch': epoch + 1,
 				'state_dict': model.state_dict(),
 				'optimizer': optimizer.state_dict()
 			}, checkpoint_path)
-		break
 
 
 if __name__ == '__main__':
