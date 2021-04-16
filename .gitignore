@@ -141,3 +141,4 @@ todo.py
 /augmentations/
 model.pth 
 test_augment.py
+scratch.py
