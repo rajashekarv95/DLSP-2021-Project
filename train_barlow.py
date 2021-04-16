@@ -197,6 +197,7 @@ def main():
 			# mask_probs.update(mask.mean().item())
 
 			lr = adjust_learning_rate(args, optimizer, unlabeled_train_loader, epoch * len(unlabeled_train_loader) + batch_idx)
+			print(lr)
 			optimizer.zero_grad()
 			loss.backward()
 			optimizer.step()
