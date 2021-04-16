@@ -31,13 +31,13 @@ from transforms import TransformFixMatch, get_transforms, TransformBarlowTwins
 
 from utils.misc import Average
 
-# random.seed(10)
-# np.random.seed(10)
-# torch.manual_seed(10)
-# if torch.cuda.is_available():
-# 	torch.cuda.manual_seed(10)
+random.seed(10)
+np.random.seed(10)
+torch.manual_seed(10)
+if torch.cuda.is_available():
+	torch.cuda.manual_seed(10)
 
-# torch.backends.cudnn.deterministic=True
+torch.backends.cudnn.deterministic=True
 
 def exclude_bias_and_norm(p):
 	return p.ndim == 1
@@ -144,7 +144,7 @@ def main():
 	unlabeled_train_dataset = CustomDataset(root= dataset_folder, split = "unlabeled", transform = TransformBarlowTwins())
 	unlabeled_train_loader = DataLoader(unlabeled_train_dataset, batch_size= batch_size, shuffle= True, num_workers= 4)
 
-	model = resnet18(pretrained=False, num_classes = num_classes)
+	model = resnet34(pretrained=False, num_classes = num_classes)
 	optimizer = LARS(model.parameters(), lr=0, weight_decay=weight_decay,
 					 weight_decay_filter=exclude_bias_and_norm,
 					 lars_adaptation_filter=exclude_bias_and_norm)
