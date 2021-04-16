@@ -170,7 +170,7 @@ def main():
 
 	#TODO
 	# scaler = torch.cuda.amp.GradScaler()
-	model = torch.nn.SyncBatchNorm.convert_sync_batchnorm(model)
+	# model = torch.nn.SyncBatchNorm.convert_sync_batchnorm(model)
 
 	for epoch in tqdm(range(start_epoch, n_epochs)):
 
