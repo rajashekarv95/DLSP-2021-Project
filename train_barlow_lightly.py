@@ -183,7 +183,7 @@ def main():
 			y_b = batch[0][1].to(device)
 			
 			z_a, z_b = model(y_a, y_b)
-			loss = criterion(z_a, z_b)
+			loss = criterion(z_a, z_b).sum()
 
 			lr = adjust_learning_rate(args, optimizer, unlabeled_train_loader, epoch * len(unlabeled_train_loader) + batch_idx)
 			optimizer.zero_grad()
