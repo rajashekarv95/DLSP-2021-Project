@@ -141,7 +141,7 @@ def main():
 		
 	# dataset_folder = dataset_folder = "./dataset" 
 	unlabeled_train_dataset = CustomDataset(root= dataset_folder, split = "unlabeled", transform = TransformBarlowTwins())
-	unlabeled_train_loader = DataLoader(unlabeled_train_dataset, batch_size= batch_size, shuffle= True)
+	unlabeled_train_loader = DataLoader(unlabeled_train_dataset, batch_size= batch_size, shuffle= True, num_workers= 4)
 
 	model = resnet18(pretrained=False, num_classes = num_classes)
 	optimizer = LARS(model.parameters(), lr=0, weight_decay=weight_decay,
@@ -197,7 +197,7 @@ def main():
 			# mask_probs.update(mask.mean().item())
 
 			lr = adjust_learning_rate(args, optimizer, unlabeled_train_loader, epoch * len(unlabeled_train_loader) + batch_idx)
-			print(lr)
+			print(lr, flush= True)
 			optimizer.zero_grad()
 			loss.backward()
 			optimizer.step()
