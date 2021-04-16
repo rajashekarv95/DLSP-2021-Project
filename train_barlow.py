@@ -17,6 +17,7 @@ import PIL.ImageEnhance
 import PIL.ImageDraw
 from PIL import Image
 from models.resnet_barlow import resnet34, resnet18
+from models.barlow_twins import BarlowTwins
 
 import numpy as np
 import torch
@@ -118,6 +119,7 @@ def main():
 	parser.add_argument('--momentum', type= float, default= 0.9)
 	parser.add_argument('--weight-decay', type= float, default= 1.5*1e-6)
 	parser.add_argument('--warmup-epochs', type= int, default= 2)
+	parser.add_argument('--scale-loss', type = float, default= 1.0/32.0)
 	args = parser.parse_args()
 
 	dataset_folder = args.dataset_folder
@@ -144,7 +146,8 @@ def main():
 	unlabeled_train_dataset = CustomDataset(root= dataset_folder, split = "unlabeled", transform = TransformBarlowTwins())
 	unlabeled_train_loader = DataLoader(unlabeled_train_dataset, batch_size= batch_size, shuffle= True, num_workers= 4)
 
-	model = resnet34(pretrained=False, num_classes = num_classes)
+	# model = resnet34(pretrained=False, num_classes = num_classes)
+	model = BarlowTwins(args)
 	optimizer = LARS(model.parameters(), lr=0, weight_decay=weight_decay,
 					 weight_decay_filter=exclude_bias_and_norm,
 					 lars_adaptation_filter=exclude_bias_and_norm)
@@ -178,32 +181,40 @@ def main():
 		for batch_idx, batch in enumerate(tqdm(unlabeled_train_loader)):
 			y_a = batch[0][0].to(device)
 			y_b = batch[0][1].to(device)
-			y_cat = torch.cat((y_a, y_b), dim = 0)
+			# y_cat = torch.cat((y_a, y_b), dim = 0)
 			
+			# with torch.cuda.amp.autocast():
+			# 	z_cat = model(y_cat)
+
+			# 	z_a, z_b = torch.chunk(z_cat, chunks = 2, dim = 0)
+			# 	print(z_a[:2], z_b[:2])
+
+			# 	z_a_norm = (z_a - (torch.mean(z_a, dim = 1, keepdim=True))) / torch.std(z_a, dim = 1, keepdim=True)
+			# 	z_b_norm = (z_b - (torch.mean(z_b, dim = 1, keepdim=True))) / torch.std(z_b, dim = 1, keepdim=True)
+
+			# 	c = torch.matmul(z_a_norm.T, z_b_norm)
+			# 	c_diff = torch.pow(c - torch.eye(c.size()[0]).to(device), 2)
+
+			# 	loss = torch.mean(torch.mul(off_diagonal(c_diff), lambd))
+
+			lr = adjust_learning_rate(args, optimizer, unlabeled_train_loader, epoch * len(unlabeled_train_loader) + batch_idx)
+			optimizer.zero_grad()
 			with torch.cuda.amp.autocast():
-				z_cat = model(y_cat)
-
-				z_a, z_b = torch.chunk(z_cat, chunks = 2, dim = 0)
-				print(z_a[:2], z_b[:2])
-
-				z_a_norm = (z_a - (torch.mean(z_a, dim = 1, keepdim=True))) / torch.std(z_a, dim = 1, keepdim=True)
-				z_b_norm = (z_b - (torch.mean(z_b, dim = 1, keepdim=True))) / torch.std(z_b, dim = 1, keepdim=True)
-
-				c = torch.matmul(z_a_norm.T, z_b_norm)
-				c_diff = torch.pow(c - torch.eye(c.size()[0]).to(device), 2)
-
-				loss = torch.mean(torch.mul(off_diagonal(c_diff), lambd))
+				loss = model.forward(y_a, y_b)
+			scaler.scale(loss).backward()
+			scaler.step(optimizer)
+			scaler.update()
 
 			losses.update(loss.item())
 			# losses_l.update(loss_labeled.item())
 			# losses_u.update(loss_unlabeled.item())
 			# mask_probs.update(mask.mean().item())
 
-			lr = adjust_learning_rate(args, optimizer, unlabeled_train_loader, epoch * len(unlabeled_train_loader) + batch_idx)
-			optimizer.zero_grad()
-			scaler.scale(loss).backward()
-			scaler.step(optimizer)
-			scaler.update()
+			# lr = adjust_learning_rate(args, optimizer, unlabeled_train_loader, epoch * len(unlabeled_train_loader) + batch_idx)
+			# optimizer.zero_grad()
+			# scaler.scale(loss).backward()
+			# scaler.step(optimizer)
+			# scaler.update()
 			# scheduler.step()
 
 			if batch_idx % 25 == 0:
