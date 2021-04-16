@@ -87,7 +87,7 @@ def save_checkpoint(state, checkpoint_path):
 
 def adjust_learning_rate(args, optimizer, loader, step):
 	max_steps = args.num_epochs * len(loader)
-	warmup_steps = 10 * len(loader)
+	warmup_steps = 0
 	base_lr = args.learning_rate * args.batch_size / 256
 	if step < warmup_steps:
 		lr = base_lr * step / warmup_steps
@@ -120,15 +120,9 @@ def main():
 	args = parser.parse_args()
 
 	dataset_folder = args.dataset_folder
-	batch_size_labeled = args.batch_size
-	mu = args.mu
-	batch_size_unlabeled = mu * args.batch_size
+	batch_size = args.batch_size
 	n_epochs = args.num_epochs
-	n_steps = args.num_steps
 	num_classes = 800
-	threshold = args.threshold
-	learning_rate = args.learning_rate
-	momentum = args.momentum
 	lambd = args.lambd
 	weight_decay = args.weight_decay
 	checkpoint_path = args.checkpoint_path
@@ -146,12 +140,11 @@ def main():
 		return x.flatten()[:-1].view(n - 1, n + 1)[:, 1:].flatten()
 		
 	# dataset_folder = dataset_folder = "./dataset" 
-	train_transform, val_transform = get_transforms()
 	unlabeled_train_dataset = CustomDataset(root= dataset_folder, split = "unlabeled", transform = TransformBarlowTwins())
-	unlabeled_train_loader = DataLoader(unlabeled_train_dataset, batch_size= 512, shuffle= True)
+	unlabeled_train_loader = DataLoader(unlabeled_train_dataset, batch_size= batch_size, shuffle= True)
 
-	model = resnet18(pretrained=False, num_classes = 800)
-	optimizer = LARS(model.parameters(), lr=0, weight_decay=args.weight_decay,
+	model = resnet18(pretrained=False, num_classes = num_classes)
+	optimizer = LARS(model.parameters(), lr=0, weight_decay=weight_decay,
 					 weight_decay_filter=exclude_bias_and_norm,
 					 lars_adaptation_filter=exclude_bias_and_norm)
 
@@ -175,17 +168,11 @@ def main():
 
 	model.train()
 	losses = Average()
-	losses_l = Average()
-	losses_u = Average()
-	mask_probs = Average()
 
 
 	for epoch in tqdm(range(start_epoch, n_epochs)):
 
 		# for batch_idx in tqdm(range(n_steps)): ## CHECK
-		loss_epoch = 0.0
-		loss_lab_epoch = 0.0
-		loss_unlab_epoch = 0.0
 
 		for batch_idx, batch in enumerate(tqdm(unlabeled_train_loader)):
 			y_a = batch[0][0].to(device)
@@ -209,7 +196,7 @@ def main():
 			# losses_u.update(loss_unlabeled.item())
 			# mask_probs.update(mask.mean().item())
 
-			lr = adjust_learning_rate(args, optimizer, unlabeled_train_loader, batch_idx)
+			lr = adjust_learning_rate(args, optimizer, unlabeled_train_loader, epoch * len(unlabeled_train_loader) + batch_idx)
 			optimizer.zero_grad()
 			loss.backward()
 			optimizer.step()
