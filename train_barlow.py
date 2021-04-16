@@ -16,7 +16,7 @@ import PIL.ImageOps
 import PIL.ImageEnhance
 import PIL.ImageDraw
 from PIL import Image
-from models.resnet import resnet34, resnet18
+from models.resnet_barlow import resnet34, resnet18
 
 import numpy as np
 import torch
