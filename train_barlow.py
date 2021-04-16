@@ -87,7 +87,7 @@ def save_checkpoint(state, checkpoint_path):
 
 def adjust_learning_rate(args, optimizer, loader, step):
 	max_steps = args.num_epochs * len(loader)
-	warmup_steps = 0
+	warmup_steps = 10 * len(loader)
 	base_lr = args.learning_rate * args.batch_size / 256
 	if step < warmup_steps:
 		lr = base_lr * step / warmup_steps
@@ -205,7 +205,7 @@ def main():
 			# scheduler.step()
 
 			if batch_idx % 25 == 0:
-				print(f"Epoch number: {epoch}, loss_avg: {losses.avg}, loss: {loss.item()}", flush= True)
+				print(f"Epoch number: {epoch}, loss_avg: {losses.avg}, loss: {loss.item()}, lr: {lr}", flush= True)
 		
 		save_checkpoint({
 				'epoch': epoch + 1,
