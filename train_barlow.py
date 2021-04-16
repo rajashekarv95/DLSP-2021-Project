@@ -87,7 +87,7 @@ def save_checkpoint(state, checkpoint_path):
 
 def adjust_learning_rate(args, optimizer, loader, step):
 	max_steps = args.num_epochs * len(loader)
-	warmup_steps = 10 * len(loader)
+	warmup_steps = args.warmup_epochs * len(loader)
 	base_lr = args.learning_rate * args.batch_size / 256
 	if step < warmup_steps:
 		lr = base_lr * step / warmup_steps
@@ -117,6 +117,7 @@ def main():
 	parser.add_argument('--lambd', type= float, default= 0.005)
 	parser.add_argument('--momentum', type= float, default= 0.9)
 	parser.add_argument('--weight-decay', type= float, default= 1.5*1e-6)
+	parser.add_argument('--warmup-epochs', type= int, default= 2)
 	args = parser.parse_args()
 
 	dataset_folder = args.dataset_folder
