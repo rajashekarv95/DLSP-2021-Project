@@ -141,8 +141,6 @@ def main():
 
 	model = lightly.models.BarlowTwins(resnet34(pretrained= False), num_ftrs= 512)
 
-	print(model)
-
 	optimizer = LARS(model.parameters(), lr=0, weight_decay=weight_decay,
 					 weight_decay_filter=exclude_bias_and_norm,
 					 lars_adaptation_filter=exclude_bias_and_norm)
