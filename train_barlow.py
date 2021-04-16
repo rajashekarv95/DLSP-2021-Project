@@ -190,7 +190,7 @@ def main():
 				c = torch.matmul(z_a_norm.T, z_b_norm)
 				c_diff = torch.pow(c - torch.eye(c.size()[0]).to(device), 2)
 
-				loss = torch.sum(torch.mul(off_diagonal(c_diff), lambd))
+				loss = torch.mean(torch.mul(off_diagonal(c_diff), lambd))
 
 			losses.update(loss.item())
 			# losses_l.update(loss_labeled.item())
