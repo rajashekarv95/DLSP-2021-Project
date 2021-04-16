@@ -169,7 +169,7 @@ def main():
 	model.train()
 	losses = Average()
 
-
+	scaler = torch.cuda.amp.GradScaler()
 	for epoch in tqdm(range(start_epoch, n_epochs)):
 
 		# for batch_idx in tqdm(range(n_steps)): ## CHECK
@@ -178,18 +178,19 @@ def main():
 			y_a = batch[0][0].to(device)
 			y_b = batch[0][1].to(device)
 			y_cat = torch.cat((y_a, y_b), dim = 0)
+			
+			with torch.cuda.amp.autocast():
+				z_cat = model(y_cat)
 
-			z_cat = model(y_cat)
+				z_a, z_b = torch.chunk(z_cat, chunks = 2, dim = 0)
 
-			z_a, z_b = torch.chunk(z_cat, chunks = 2, dim = 0)
+				z_a_norm = (z_a - (torch.mean(z_a, dim = 1, keepdim=True))) / torch.std(z_a, dim = 1, keepdim=True)
+				z_b_norm = (z_b - (torch.mean(z_b, dim = 1, keepdim=True))) / torch.std(z_b, dim = 1, keepdim=True)
 
-			z_a_norm = (z_a - (torch.mean(z_a, dim = 1, keepdim=True))) / torch.std(z_a, dim = 1, keepdim=True)
-			z_b_norm = (z_b - (torch.mean(z_b, dim = 1, keepdim=True))) / torch.std(z_b, dim = 1, keepdim=True)
+				c = torch.matmul(z_a_norm.T, z_b_norm)
+				c_diff = torch.pow(c - torch.eye(c.size()[0]).to(device), 2)
 
-			c = torch.matmul(z_a_norm.T, z_b_norm)
-			c_diff = torch.pow(c - torch.eye(c.size()[0]).to(device), 2)
-
-			loss = torch.sum(torch.mul(off_diagonal(c_diff), lambd))
+				loss = torch.sum(torch.mul(off_diagonal(c_diff), lambd))
 
 			losses.update(loss.item())
 			# losses_l.update(loss_labeled.item())
@@ -198,8 +199,9 @@ def main():
 
 			lr = adjust_learning_rate(args, optimizer, unlabeled_train_loader, epoch * len(unlabeled_train_loader) + batch_idx)
 			optimizer.zero_grad()
-			loss.backward()
-			optimizer.step()
+			scaler.scale(loss).backward()
+			scaler.step(optimizer)
+			scaler.update()
 			# scheduler.step()
 
 			if batch_idx % 25 == 0:
