@@ -1,4 +1,5 @@
 import torch.nn as nn
+import torch
 from models.resnet import resnet18
 
 class BarlowTwins(nn.Module):
@@ -36,7 +37,8 @@ class BarlowTwins(nn.Module):
 
 		# sum the cross-correlation matrix between all gpus
 		c.div_(self.args.batch_size)
-		torch.distributed.all_reduce(c)
+		# print(c.size())
+		# c = torch.sum(c, keepdim= True)
 
 		# use --scale-loss to multiply the loss by a constant factor
 		# see the Issues section of the readme
