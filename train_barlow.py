@@ -31,13 +31,13 @@ from transforms import TransformFixMatch, get_transforms, TransformBarlowTwins
 
 from utils.misc import Average
 
-random.seed(10)
-np.random.seed(10)
-torch.manual_seed(10)
-if torch.cuda.is_available():
-	torch.cuda.manual_seed(10)
+# random.seed(10)
+# np.random.seed(10)
+# torch.manual_seed(10)
+# if torch.cuda.is_available():
+# 	torch.cuda.manual_seed(10)
 
-torch.backends.cudnn.deterministic=True
+# torch.backends.cudnn.deterministic=True
 
 def exclude_bias_and_norm(p):
 	return p.ndim == 1
