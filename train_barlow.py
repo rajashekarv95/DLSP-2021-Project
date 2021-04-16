@@ -184,6 +184,7 @@ def main():
 				z_cat = model(y_cat)
 
 				z_a, z_b = torch.chunk(z_cat, chunks = 2, dim = 0)
+				print(z_a[:2], z_b[:2])
 
 				z_a_norm = (z_a - (torch.mean(z_a, dim = 1, keepdim=True))) / torch.std(z_a, dim = 1, keepdim=True)
 				z_b_norm = (z_b - (torch.mean(z_b, dim = 1, keepdim=True))) / torch.std(z_b, dim = 1, keepdim=True)
