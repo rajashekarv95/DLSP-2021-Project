@@ -150,8 +150,10 @@ def main():
 	if torch.cuda.device_count() > 1:
 		print("Let's use", torch.cuda.device_count(), "GPUs!")
 		model = torch.nn.DataParallel(model)
+		criterion = torch.nn.DataParallel(criterion)
 
 	model = model.to(device)
+	criterion = criterion.to(device)
 
 	start_epoch = 0
 
