@@ -139,7 +139,7 @@ def main():
 	unlabeled_train_dataset = CustomDataset(root= dataset_folder, split = "unlabeled", transform = TransformBarlowTwins())
 	unlabeled_train_loader = DataLoader(unlabeled_train_dataset, batch_size= batch_size, shuffle= True, num_workers= 4)
 
-	model = lightly.models.BarlowTwins(resnet34(pretrained= False), num_ftrs= 512)
+	model = lightly.models.BarlowTwins(resnet18(pretrained= False), num_ftrs= 512)
 
 	optimizer = LARS(model.parameters(), lr=0, weight_decay=weight_decay,
 					 weight_decay_filter=exclude_bias_and_norm,
@@ -170,7 +170,7 @@ def main():
 
 	#TODO
 	# scaler = torch.cuda.amp.GradScaler()
-	# model = torch.nn.SyncBatchNorm.convert_sync_batchnorm(model)
+	model = torch.nn.SyncBatchNorm.convert_sync_batchnorm(model)
 
 	for epoch in tqdm(range(start_epoch, n_epochs)):
 
