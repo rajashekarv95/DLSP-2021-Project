@@ -115,7 +115,10 @@ def main():
 
 	model_barlow.load_state_dict(checkpoint['state_dict'])
 	# print(model_barlow)
-	model_barlow = model_barlow.module.backbone
+	if args.wide == 0:
+		model_barlow = model_barlow.module.backbone
+	else:
+		model_barlow = model_barlow.backbone
 
 	if args.wide == 1:
 		classifier = Classifier(2048)
