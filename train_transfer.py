@@ -21,7 +21,7 @@ import lightly
 from dataloader import CustomDataset
 from transforms import get_transforms
 
-from models.resnet_barlow import resnet34, resnet18
+from models.resnet_barlow import resnet34, resnet18, wide_resnet50_2
 
 from utils.misc import Average
 
@@ -38,9 +38,9 @@ def exclude_bias_and_norm(p):
 
 class Classifier(torch.nn.Module):
 
-	def __init__(self):
+	def __init__(self, ip):
 		super().__init__()
-		self.fc1 = torch.nn.Linear(512, 1024)
+		self.fc1 = torch.nn.Linear(ip, 1024)
 		self.fc2 = torch.nn.Linear(1024, 2048)
 		self.fc3 = torch.nn.Linear(2048, 4096)
 		self.fc4 = torch.nn.Linear(4096, 800)
@@ -73,6 +73,7 @@ def main():
 	parser.add_argument('--momentum', type= float, default= 0.9)
 	parser.add_argument('--weight-decay', type= float, default= 0.001)
 	parser.add_argument('--fine-tune', type= int, default= 0)
+	parser.add_argument('--wide', type= int, default= 0 )
 	args = parser.parse_args()
 
 	dataset_folder = args.dataset_folder
@@ -96,7 +97,10 @@ def main():
 	labeled_train_loader = DataLoader(labeled_train_dataset, batch_size= batch_size, shuffle= True, num_workers= 4)
 	val_loader = DataLoader(val_dataset, batch_size= batch_size_val, shuffle= False, num_workers= 4)
 
-	model_barlow = lightly.models.BarlowTwins(resnet18(pretrained= False), num_ftrs= 512)
+	if args.wide == 1:
+		model_barlow = lightly.models.BarlowTwins(wide_resnet50_2(pretrained= False), num_ftrs= 2048)
+	else:
+		model_barlow = lightly.models.BarlowTwins(resnet18(pretrained= False), num_ftrs= 512)
 	
 	checkpoint = torch.load(args.transfer_path, map_location= device) 
 
@@ -111,7 +115,11 @@ def main():
 	model_barlow.load_state_dict(checkpoint['state_dict'])
 	# print(model_barlow)
 	model_barlow = model_barlow.module.backbone
-	classifier = Classifier()
+
+	if args.wide == 1:
+		classifier = Classifier(2048)
+	else:
+		classifier = Classifier(512)
 
 	if torch.cuda.device_count() > 1:
 		print("Let's use", torch.cuda.device_count(), "GPUs!")
