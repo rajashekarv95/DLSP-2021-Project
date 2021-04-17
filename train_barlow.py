@@ -16,7 +16,7 @@ import PIL.ImageOps
 import PIL.ImageEnhance
 import PIL.ImageDraw
 from PIL import Image
-from models.resnet_barlow import resnet34, resnet18
+from models.resnet import resnet34, resnet18
 from models.barlow_twins import BarlowTwins
 
 import numpy as np
@@ -174,6 +174,7 @@ def main():
 	losses = Average()
 
 	scaler = torch.cuda.amp.GradScaler()
+	model = torch.nn.SyncBatchNorm.convert_sync_batchnorm(model)
 	for epoch in tqdm(range(start_epoch, n_epochs)):
 
 		# for batch_idx in tqdm(range(n_steps)): ## CHECK
