@@ -16,7 +16,7 @@ import PIL.ImageOps
 import PIL.ImageEnhance
 import PIL.ImageDraw
 from PIL import Image
-from models.resnet_barlow import resnet34, resnet18
+from models.resnet_barlow import resnet34, resnet18, wide_resnet50_2
 from models.barlow_twins import BarlowTwins
 
 import numpy as np
@@ -139,7 +139,7 @@ def main():
 	unlabeled_train_dataset = CustomDataset(root= dataset_folder, split = "unlabeled", transform = TransformBarlowTwins())
 	unlabeled_train_loader = DataLoader(unlabeled_train_dataset, batch_size= batch_size, shuffle= True, num_workers= 4)
 
-	model = lightly.models.BarlowTwins(resnet18(pretrained= False), num_ftrs= 512)
+	model = lightly.models.BarlowTwins(wide_resnet50_2(pretrained= False), num_ftrs= 2048)
 
 	optimizer = LARS(model.parameters(), lr=0, weight_decay=weight_decay,
 					 weight_decay_filter=exclude_bias_and_norm,
