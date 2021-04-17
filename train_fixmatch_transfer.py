@@ -118,10 +118,10 @@ def main():
 	# model = torchvision.models.wide_resnet50_2(pretrained= False, num_classes = num_classes)
 	if n_layers == 18:
 		model = resnet18(pretrained=False, num_classes = 800)
-		classifier = Classifier()
+		classifier = Classifier(ip= 512)
 	elif n_layers == 34:
 		model = resnet34(pretrained=False, num_classes = 800)
-		classifier = Classifier()
+		classifier = Classifier(ip= 2048)
 	else:
 		raise ValueError("Wrong value passed for layers")
 
