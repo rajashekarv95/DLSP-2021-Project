@@ -108,7 +108,6 @@ def main():
 	model_barlow.load_state_dict(checkpoint['state_dict'])
 	# print(model_barlow)
 	model_barlow = model_barlow.module.backbone
-	print(model_barlow)
 	classifier = Classifier()
 
 	if torch.cuda.device_count() > 1:
