@@ -106,11 +106,11 @@ def main():
 	#TODO: Get args
 	# python3 train_fixmatch.py --checkpoint-path ./checkpoint_path/model.pth --batch-size 1 --num-epochs 1 --num-steps 1 --train-from-start 1 --dataset-folder ./dataset
 	parser = argparse.ArgumentParser()
-	parser.add_argument('--checkpoint-path', type=str, default= "./model.pth")
+	parser.add_argument('--checkpoint-path', type=str, default= "./checkpoints/model_barlow_20h.pth.tar")
 	parser.add_argument('--batch-size', type=int, default= 512)
 	parser.add_argument('--num-epochs', type=int, default= 10)
 	parser.add_argument('--num-steps', type=int, default= 1)
-	parser.add_argument('--train-from-start', type= int, default= 1)
+	parser.add_argument('--train-from-start', type= int, default= 0)
 	parser.add_argument('--dataset-folder', type= str, default= "./dataset")
 	parser.add_argument('--learning-rate', type = float, default= 0.01)
 	parser.add_argument('--threshold', type = float, default= 0.5)
@@ -165,7 +165,9 @@ def main():
 		assert os.path.isfile(checkpoint_path), "Error: no checkpoint directory found!"
 		print("Restoring model from checkpoint")
 		# args.out = os.path.dirname(args.resume)
-		checkpoint = torch.load(checkpoint_path)
+		checkpoint = torch.load(checkpoint_path, map_location= device)
+		if args.wide == 0:
+			model = torch.nn.DataParallel(model)
 		# best_acc = checkpoint['best_acc']
 		start_epoch = checkpoint['epoch'] - 1
 		model.load_state_dict(checkpoint['state_dict'])
