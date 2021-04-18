@@ -120,6 +120,7 @@ def main():
 	parser.add_argument('--weight-decay', type= float, default= 1.5*1e-6)
 	parser.add_argument('--warmup-epochs', type= int, default= 2)
 	parser.add_argument('--scale-loss', type = float, default= 1.0/32.0)
+	parser.add_argument('--wide', type= int, default= 0)
 	args = parser.parse_args()
 
 	dataset_folder = args.dataset_folder
@@ -139,7 +140,10 @@ def main():
 	unlabeled_train_dataset = CustomDataset(root= dataset_folder, split = "unlabeled", transform = TransformBarlowTwins())
 	unlabeled_train_loader = DataLoader(unlabeled_train_dataset, batch_size= batch_size, shuffle= True, num_workers= 4)
 
-	model = lightly.models.BarlowTwins(wide_resnet50_2(pretrained= False), num_ftrs= 2048)
+	if args.wide == 1:
+		model = lightly.models.BarlowTwins(wide_resnet50_2(pretrained= False), num_ftrs= 2048)
+	else:
+		model = lightly.models.BarlowTwins(wide_resnet50_2(pretrained= False), num_ftrs= 512)
 
 	optimizer = LARS(model.parameters(), lr=0, weight_decay=weight_decay,
 					 weight_decay_filter=exclude_bias_and_norm,
