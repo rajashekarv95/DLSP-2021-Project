@@ -143,7 +143,7 @@ def main():
 	if args.wide == 1:
 		model = lightly.models.BarlowTwins(wide_resnet50_2(pretrained= False), num_ftrs= 2048)
 	else:
-		model = lightly.models.BarlowTwins(wide_resnet50_2(pretrained= False), num_ftrs= 512)
+		model = lightly.models.BarlowTwins(resnet18(pretrained= False), num_ftrs= 512)
 
 	optimizer = LARS(model.parameters(), lr=0, weight_decay=weight_decay,
 					 weight_decay_filter=exclude_bias_and_norm,
