@@ -131,17 +131,6 @@ def main():
 	model.load_state_dict(checkpoint['model_barlow_state_dict'])
 	classifier.load_state_dict(checkpoint['classifier_state_dict'])
 
-	if train_from_start == 0:
-		assert os.path.isfile(checkpoint_path), "Error: no checkpoint directory found!"
-		print("Restoring model from checkpoint")
-		# args.out = os.path.dirname(args.resume)
-		checkpoint = torch.load(checkpoint_path)
-		# best_acc = checkpoint['best_acc']
-		start_epoch = checkpoint['epoch'] - 1
-		model.load_state_dict(checkpoint['state_dict'])
-		optimizer.load_state_dict(checkpoint['optimizer'])
-		scheduler.load_state_dict(checkpoint['scheduler'])
-
 	param_groups = [dict(params=classifier.parameters(), lr=args.learning_rate)]
 
 	if args.fine_tune:
@@ -159,6 +148,18 @@ def main():
 		print("Let's use", torch.cuda.device_count(), "GPUs!")
 		model = torch.nn.DataParallel(model)
 		classifier = torch.nn.DataParallel(classifier)
+
+	if train_from_start == 0:
+		assert os.path.isfile(checkpoint_path), "Error: no checkpoint directory found!"
+		print("Restoring model from checkpoint")
+		# args.out = os.path.dirname(args.resume)
+		checkpoint = torch.load(checkpoint_path)
+		# best_acc = checkpoint['best_acc']
+		start_epoch = checkpoint['epoch'] - 1
+		model.load_state_dict(checkpoint['backbone_state_dict'])
+		classifier.load_state_dict(checkpoint['classifier_state_dict'])
+		optimizer.load_state_dict(checkpoint['optimizer'])
+		scheduler.load_state_dict(checkpoint['scheduler'])
 
 	model = model.to(device)
 	classifier = classifier.to(device)
