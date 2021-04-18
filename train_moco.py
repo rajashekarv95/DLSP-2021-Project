@@ -90,7 +90,6 @@ def main():
 			'optimizer': optimizer.state_dict(),
 			'scheduler': scheduler.state_dict()
 		}, args.checkpoint_path)
-		break
 			
 
 
