@@ -16,20 +16,12 @@ set -x
 
 
 singularity exec --nv \
---overlay /scratch/rv2138/env/conda_new.ext3:ro \
---overlay /scratch/rv2138/student_dataset.sqsh:ro \
-/scratch/work/public/singularity/cuda11.0-cudnn8-devel-ubuntu18.04.sif \
+--overlay /scratch/sr5768/env/conda_new.ext3:ro \
+--overlay /scratch/sr5768/checkpoints/student_dataset.sqsh:ro \
+/scratch/work/public/singularity/cuda10.1-cudnn7-devel-ubuntu18.04.sif \
 bash -c "source /ext3/env.sh
 python3 train_simsiam.py --checkpoint-path /scratch/sr5768/checkpoints/model.pth.tar \
 --num-epochs 1 \
 --batch-size 64 \
---num-epochs 120 \
---num-steps 400 \
---train-from-start 1 \
 --dataset-folder /dataset \
---learning-rate 0.03 \
---threshold 0.7 \
---lambd 10 \
---momentum 0.9 \
---weight-decay 0.0001
 " 

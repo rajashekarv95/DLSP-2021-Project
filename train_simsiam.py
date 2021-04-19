@@ -44,51 +44,9 @@ if torch.cuda.is_available():
 
 torch.backends.cudnn.deterministic=True
 
+def save_checkpoint(state, checkpoint_path):
+	torch.save(state, checkpoint_path)
 
-num_workers = 8
-batch_size = 128
-seed = 1
-epochs = 50
-input_size = 96
-
-# dimension of the embeddings
-num_ftrs = 512
-# dimension of the output of the prediction and projection heads
-out_dim = proj_hidden_dim = 512
-# the prediction head uses a bottleneck architecture
-pred_hidden_dim = 128
-# use 2 layers in the projection head
-num_mlp_layers = 2
-
-# set the path to the dataset
-path_to_data = './dataset/'
-
-# define the augmentations for self-supervised learning
-collate_fn = lightly.data.ImageCollateFunction(
-	input_size=input_size,
-	# require invariance to flips and rotations
-	hf_prob=0.5,
-	vf_prob=0.5,
-	rr_prob=0.5,
-	# satellite images are all taken from the same height
-	# so we use only slight random cropping
-	min_scale=0.5,
-	# use a weak color jitter for invariance w.r.t small color changes
-	cj_prob=0.2,
-	cj_bright=0.1,
-	cj_contrast=0.1,
-	cj_hue=0.1,
-	cj_sat=0.1,
-)
-
-test_transforms = torchvision.transforms.Compose([
-	torchvision.transforms.Resize((input_size, input_size)),
-	torchvision.transforms.ToTensor(),
-	torchvision.transforms.Normalize(
-		mean=lightly.data.collate.imagenet_normalize['mean'],
-		std=lightly.data.collate.imagenet_normalize['std'],
-	)
-])
 
 def main():
 	#TODO: Get args
@@ -106,6 +64,13 @@ def main():
 	parser.add_argument('--lambd', type= float, default= 0.005)
 	parser.add_argument('--momentum', type= float, default= 0.9)
 	parser.add_argument('--weight-decay', type= float, default= 1.5*1e-6)
+	parser.add_argument('--num-ftrs', type= int, default= 512)
+	parser.add_argument('--out-dim', type= int, default= 512)
+	parser.add_argument('--proj-hidden-dim', type= int, default= 128)
+	parser.add_argument('--pred-hidden-dim', type= int, default= 128)
+	parser.add_argument('--num-mlp-layers', type= int, default= 2)
+
+
 	args = parser.parse_args()
 
 	dataset_folder = args.dataset_folder
@@ -146,17 +111,17 @@ def main():
 	# create the SimSiam model using the backbone from above
 	model = lightly.models.SimSiam(
 		backbone,
-		num_ftrs=num_ftrs,
-		proj_hidden_dim=pred_hidden_dim,
-		pred_hidden_dim=pred_hidden_dim,
-		out_dim=out_dim,
-		num_mlp_layers=num_mlp_layers
+		num_ftrs=args.num_ftrs,
+		proj_hidden_dim=args.pred_hidden_dim,
+		pred_hidden_dim=args.pred_hidden_dim,
+		out_dim=args.out_dim,
+		num_mlp_layers=args.num_mlp_layers
 	)
 
 	criterion = lightly.loss.SymNegCosineSimilarityLoss()
 
 	# scale the learning rate
-	lr = 0.05 * batch_size / 256
+	lr = 0.05 * args.batch_size / 256
 	# use SGD with momentum and weight decay
 	optimizer = torch.optim.SGD(
 		model.parameters(),
@@ -217,6 +182,12 @@ def main():
 		print(f'[Epoch {e:3d}] '
 			f'Loss = {avg_loss:.2f} | '
 			f'Collapse Level: {collapse_level:.2f} / 1.00')
+
+		save_checkpoint({
+				'epoch': epoch + 1,
+				'state_dict': model.state_dict(),
+				'optimizer': optimizer.state_dict()
+			}, checkpoint_path)
 
 if __name__ == '__main__':
 	main()
