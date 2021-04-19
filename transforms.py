@@ -69,6 +69,17 @@ class Solarization(object):
         else:
             return img
 
+class GaussianBlurMoCo(object):
+    """Gaussian blur augmentation in SimCLR https://arxiv.org/abs/2002.05709"""
+
+    def __init__(self, sigma=(0.1, 2.0)):
+        self.sigma = sigma
+
+    def __call__(self, x):
+        sigma = random.uniform(self.sigma[0], self.sigma[1])
+        x = x.filter(ImageFilter.GaussianBlur(radius=sigma))
+        return x
+
 class TransformBarlowTwins:
     def __init__(self):
         self.transform = transforms.Compose([
@@ -117,7 +128,7 @@ class TransformMoCo:
                 p=0.8
             ),
             transforms.RandomGrayscale(p=0.2),
-            transforms.RandomApply([GaussianBlur([.1, 2.])], p=0.5),
+            transforms.RandomApply([GaussianBlurMoCo([.1, 2.])], p=0.5),
             transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.4836, 0.4527, 0.4011],
