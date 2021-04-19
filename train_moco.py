@@ -26,6 +26,7 @@ def main():
 	parser.add_argument('--momentum', type= float, default= 0.9)
 	parser.add_argument('--weight-decay', type= float, default= 1.5*1e-6)
 	parser.add_argument('--memory-bank-size', type= int, default= 4096)
+	parser.add_argument('--model-momentum', type= float, default= 0.99)
 	args = parser.parse_args()
 
 	unlabeled_train_dataset = CustomDataset(root= args.dataset_folder, split = "unlabeled", transform = TransformMoCo())
@@ -48,7 +49,7 @@ def main():
 		)
 
 	# create a moco based on ResNet
-	moco_model = lightly.models.MoCo(backbone, num_ftrs=512, m=0.99, batch_shuffle=True)
+	moco_model = lightly.models.MoCo(backbone, num_ftrs=512, m=args.model_momentum, batch_shuffle=True)
 
 	# create our loss with the optional memory bank
 	criterion = lightly.loss.NTXentLoss(
