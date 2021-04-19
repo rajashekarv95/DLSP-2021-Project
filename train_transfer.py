@@ -164,6 +164,7 @@ def main():
 			model.train()
 		else:
 			model.eval()
+		classifier.train()
 
 		for batch_idx, batch in enumerate(tqdm(labeled_train_loader)):
 			img = batch[0].to(device)
