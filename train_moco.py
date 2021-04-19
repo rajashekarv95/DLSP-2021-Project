@@ -63,7 +63,7 @@ def main():
 
 	if torch.cuda.device_count() > 1:
 		print("Let's use", torch.cuda.device_count(), "GPUs!")
-		model = torch.nn.DataParallel(model)
+		moco_model = torch.nn.DataParallel(moco_model)
 		multi_gpu = 1
 	else:
 		multi_gpu = 0
