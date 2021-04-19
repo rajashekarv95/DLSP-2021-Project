@@ -124,7 +124,7 @@ def main():
 	mu = args.mu
 	batch_size_unlabeled = mu * args.batch_size
 	n_epochs = args.num_epochs
-	n_steps = args.num_steps
+	n_steps = args.num_steps		
 	num_classes = 800
 	threshold = args.threshold
 	learning_rate = args.learning_rate
