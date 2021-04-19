@@ -69,11 +69,12 @@ def main():
 	parser.add_argument('--num-epochs', type=int, default= 100)
 	parser.add_argument('--dataset-folder', type= str, default= "./dataset")
 	parser.add_argument('--learning-rate-classifier', type = float, default= 0.001)
-	parser.add_argument('--learning-rate-barlow', type = float, default= 0.001)
+	parser.add_argument('--learning-rate-model', type = float, default= 0.001)
 	parser.add_argument('--momentum', type= float, default= 0.9)
 	parser.add_argument('--weight-decay', type= float, default= 0.001)
 	parser.add_argument('--fine-tune', type= int, default= 0)
-	parser.add_argument('--wide', type= int, default= 0 )
+	parser.add_argument('--wide', type= int, default= 0)
+	parser.add_argument('--model-name', type= str, default="moco")
 	args = parser.parse_args()
 
 	dataset_folder = args.dataset_folder
@@ -97,10 +98,15 @@ def main():
 	labeled_train_loader = DataLoader(labeled_train_dataset, batch_size= batch_size, shuffle= True, num_workers= 4)
 	val_loader = DataLoader(val_dataset, batch_size= batch_size_val, shuffle= False, num_workers= 4)
 
-	if args.wide == 1:
-		model_barlow = lightly.models.BarlowTwins(wide_resnet50_2(pretrained= False), num_ftrs= 2048)
+	resnet = lightly.models.ResNetGenerator('resnet-18', 1, num_splits=0)
+
+	if args.model_name == "moco":
+		model = lightly.models.MoCo(resnet, num_ftrs= 512, m=0.99, batch_shuffle=True)
 	else:
-		model_barlow = lightly.models.BarlowTwins(resnet18(pretrained= False), num_ftrs= 512)
+		if args.wide == 1:
+			model = lightly.models.BarlowTwins(wide_resnet50_2(pretrained= False), num_ftrs= 2048)
+		else:
+			model = lightly.models.BarlowTwins(resnet18(pretrained= False), num_ftrs= 512)
 	
 	checkpoint = torch.load(args.transfer_path, map_location= device) 
 
@@ -113,12 +119,12 @@ def main():
 	# if args.wide == 0:
 	# 	model_barlow = torch.nn.DataParallel(model_barlow)
 
-	model_barlow.load_state_dict(checkpoint['state_dict'])
+	model.load_state_dict(checkpoint['state_dict'])
 	# print(model_barlow)
 	if args.wide == 0:
-		model_barlow = model_barlow.backbone
+		model = model.backbone
 	else:
-		model_barlow = model_barlow.backbone
+		model = model.backbone
 
 	if args.wide == 1:
 		classifier = Classifier(2048)
@@ -127,19 +133,19 @@ def main():
 
 	if torch.cuda.device_count() > 1:
 		print("Let's use", torch.cuda.device_count(), "GPUs!")
-		model_barlow = torch.nn.DataParallel(model_barlow)
+		model = torch.nn.DataParallel(model)
 		classifier = torch.nn.DataParallel(classifier)
 
-	if args.fine_tune:
-		model_barlow.requires_grad_(False)
+	if not args.fine_tune:
+		model.requires_grad_(False)
 
-	model_barlow = model_barlow.to(device)
+	model = model.to(device)
 	classifier = classifier.to(device)
 
 	param_groups = [dict(params=classifier.parameters(), lr=args.learning_rate_classifier)]
 
 	if args.fine_tune:
-		param_groups.append(dict(params=model_barlow.parameters(), lr=args.learning_rate_barlow))
+		param_groups.append(dict(params=model.parameters(), lr=args.learning_rate_model))
 
 	optimizer = optim.Adam(param_groups, weight_decay= weight_decay)
 	scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, n_epochs)
@@ -151,16 +157,16 @@ def main():
 
 	for epoch in tqdm(range(start_epoch, n_epochs)):
 		if args.fine_tune:
-			model_barlow.train()
+			model.train()
 		else:
-			model_barlow.eval()
+			model.eval()
 
 		for batch_idx, batch in enumerate(tqdm(labeled_train_loader)):
 			img = batch[0].to(device)
 			labels = batch[1].to(device)
 
-			barlow_out = model_barlow(img)
-			logits = classifier(barlow_out)
+			model_out = model(img)
+			logits = classifier(model_out)
 			loss = criterion(logits, labels)
 
 			optimizer.zero_grad()
@@ -175,20 +181,20 @@ def main():
 
 		save_checkpoint({
 				'epoch': epoch + 1,
-				'model_barlow_state_dict': model_barlow.state_dict(),
+				'model_state_dict': model.state_dict(),
 				'classifier_state_dict': classifier.state_dict(),
 				'optimizer': optimizer.state_dict(),
 				'scheduler': scheduler.state_dict()
 			}, checkpoint_path)
 
-		model_barlow.eval()
+		model.eval()
 		with torch.no_grad():
 			val_loss = 0
 			val_size = 0
 			total = 0
 			correct = 0
 			for batch in val_loader:
-				logits_val = classifier(model_barlow(batch[0].to(device)))
+				logits_val = classifier(model(batch[0].to(device)))
 				labels = batch[1].to(device)
 				
 				val_loss += F.cross_entropy(logits_val, labels)
