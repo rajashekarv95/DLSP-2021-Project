@@ -201,7 +201,11 @@ def main():
 			total = 0
 			correct = 0
 			for batch in val_loader:
-				logits_val = classifier(model(batch[0].to(device)))
+				model_out  = model(batch[0].to(device))
+				if args.model_name == "moco":
+					model_out = model_out.squeeze()
+					model_out = torch.nn.functional.normalize(model_out, dim=1)
+				logits_val = classifier(model_out)
 				labels = batch[1].to(device)
 				
 				val_loss += F.cross_entropy(logits_val, labels)
