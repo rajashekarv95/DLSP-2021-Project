@@ -7,7 +7,7 @@ import argparse
 import numpy as np
 from tqdm import tqdm
 
-from transforms import get_transforms, TransformBarlowTwins
+from transforms import get_transforms, TransformMoCo
 from dataloader import CustomDataset
 from models.moco import MocoModel
 from utils.misc import Average
@@ -28,7 +28,7 @@ def main():
 	parser.add_argument('--memory-bank-size', type= int, default= 4096)
 	args = parser.parse_args()
 
-	unlabeled_train_dataset = CustomDataset(root= args.dataset_folder, split = "unlabeled", transform = TransformBarlowTwins())
+	unlabeled_train_dataset = CustomDataset(root= args.dataset_folder, split = "unlabeled", transform = TransformMoCo())
 
 	unlabeled_train_loader = torch.utils.data.DataLoader(
 						unlabeled_train_dataset,
