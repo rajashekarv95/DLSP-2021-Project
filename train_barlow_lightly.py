@@ -31,6 +31,7 @@ from dataloader import CustomDataset
 from transforms import TransformFixMatch, get_transforms, TransformBarlowTwins
 
 from utils.misc import Average
+import lightly
 
 random.seed(10)
 np.random.seed(10)
@@ -42,7 +43,6 @@ torch.backends.cudnn.deterministic=True
 
 def exclude_bias_and_norm(p):
 	return p.ndim == 1
-
 
 class LARS(optim.Optimizer):
 	def __init__(self, params, lr, weight_decay=0, momentum=0.9, eta=0.001,
@@ -81,11 +81,6 @@ class LARS(optim.Optimizer):
 
 				p.add_(mu, alpha=-g['lr'])
 
-
-def save_checkpoint(state, checkpoint_path):
-	torch.save(state, checkpoint_path)
-
-
 def adjust_learning_rate(args, optimizer, loader, step):
 	max_steps = args.num_epochs * len(loader)
 	warmup_steps = args.warmup_epochs * len(loader)
@@ -101,6 +96,11 @@ def adjust_learning_rate(args, optimizer, loader, step):
 	for param_group in optimizer.param_groups:
 		param_group['lr'] = lr
 	return lr
+
+
+def save_checkpoint(state, checkpoint_path):
+	torch.save(state, checkpoint_path)
+
 
 def main():
 	#TODO: Get args
@@ -136,32 +136,24 @@ def main():
 	else:
 		device = torch.device("cpu")
 
-	def off_diagonal(x):
-		# return a flattened view of the off-diagonal elements of a square matrix
-		n, m = x.shape
-		assert n == m
-		return x.flatten()[:-1].view(n - 1, n + 1)[:, 1:].flatten()
-		
-	# dataset_folder = dataset_folder = "./dataset" 
 	unlabeled_train_dataset = CustomDataset(root= dataset_folder, split = "unlabeled", transform = TransformBarlowTwins())
-<<<<<<< HEAD
 	unlabeled_train_loader = DataLoader(unlabeled_train_dataset, batch_size= batch_size, shuffle= True, num_workers= 4)
-=======
-	unlabeled_train_loader = DataLoader(unlabeled_train_dataset,
-	 batch_size= 512, shuffle= True)
->>>>>>> aa019316770332e5996e9573a9bd7d6e1da728c9
 
-	# model = resnet34(pretrained=False, num_classes = num_classes)
-	model = BarlowTwins(args)
+	model = lightly.models.BarlowTwins(resnet18(pretrained= False), num_ftrs= 512)
+
 	optimizer = LARS(model.parameters(), lr=0, weight_decay=weight_decay,
 					 weight_decay_filter=exclude_bias_and_norm,
 					 lars_adaptation_filter=exclude_bias_and_norm)
 
+	criterion = lightly.loss.BarlowTwinsLoss()
+
 	if torch.cuda.device_count() > 1:
 		print("Let's use", torch.cuda.device_count(), "GPUs!")
 		model = torch.nn.DataParallel(model)
+		criterion = torch.nn.DataParallel(criterion)
 
 	model = model.to(device)
+	criterion = criterion.to(device)
 
 	start_epoch = 0
 
@@ -178,7 +170,10 @@ def main():
 	model.train()
 	losses = Average()
 
-	scaler = torch.cuda.amp.GradScaler()
+	#TODO
+	# scaler = torch.cuda.amp.GradScaler()
+	# model = torch.nn.SyncBatchNorm.convert_sync_batchnorm(model)
+
 	for epoch in tqdm(range(start_epoch, n_epochs)):
 
 		# for batch_idx in tqdm(range(n_steps)): ## CHECK
@@ -186,41 +181,20 @@ def main():
 		for batch_idx, batch in enumerate(tqdm(unlabeled_train_loader)):
 			y_a = batch[0][0].to(device)
 			y_b = batch[0][1].to(device)
-			# y_cat = torch.cat((y_a, y_b), dim = 0)
 			
-			# with torch.cuda.amp.autocast():
-			# 	z_cat = model(y_cat)
-
-			# 	z_a, z_b = torch.chunk(z_cat, chunks = 2, dim = 0)
-			# 	print(z_a[:2], z_b[:2])
-
-			# 	z_a_norm = (z_a - (torch.mean(z_a, dim = 1, keepdim=True))) / torch.std(z_a, dim = 1, keepdim=True)
-			# 	z_b_norm = (z_b - (torch.mean(z_b, dim = 1, keepdim=True))) / torch.std(z_b, dim = 1, keepdim=True)
-
-			# 	c = torch.matmul(z_a_norm.T, z_b_norm)
-			# 	c_diff = torch.pow(c - torch.eye(c.size()[0]).to(device), 2)
-
-			# 	loss = torch.mean(torch.mul(off_diagonal(c_diff), lambd))
+			z_a, z_b = model(y_a, y_b)
+			loss = criterion(z_a, z_b).sum()
 
 			lr = adjust_learning_rate(args, optimizer, unlabeled_train_loader, epoch * len(unlabeled_train_loader) + batch_idx)
 			optimizer.zero_grad()
-			with torch.cuda.amp.autocast():
-				loss = model.forward(y_a, y_b)
-			scaler.scale(loss).backward()
-			scaler.step(optimizer)
-			scaler.update()
 
-			losses.update(loss.item())
-			# losses_l.update(loss_labeled.item())
-			# losses_u.update(loss_unlabeled.item())
-			# mask_probs.update(mask.mean().item())
-
-			# lr = adjust_learning_rate(args, optimizer, unlabeled_train_loader, epoch * len(unlabeled_train_loader) + batch_idx)
-			# optimizer.zero_grad()
 			# scaler.scale(loss).backward()
 			# scaler.step(optimizer)
 			# scaler.update()
-			# scheduler.step()
+			loss.backward()
+			optimizer.step()
+
+			losses.update(loss.item())
 
 			if batch_idx % 25 == 0:
 				print(f"Epoch number: {epoch}, loss_avg: {losses.avg}, loss: {loss.item()}, lr: {lr}", flush= True)

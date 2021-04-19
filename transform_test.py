@@ -1,12 +1,13 @@
 import torch
-from transforms import TransformFixMatch, get_transforms
+from transforms import TransformFixMatch, get_transforms, TransformBarlowTwins
 from dataloader import CustomDataset
 from matplotlib import pyplot as plt
 from torch.utils.data import DataLoader
 
+train_transform, _ = get_transforms()
 unlabeled_train_dataset = CustomDataset(root= './dataset', 
                                             split = "unlabeled", 
-                                            transform = TransformFixMatch(mean = 0, std = 0))
+                                            transform = TransformBarlowTwins())
 unlabeled_train_loader = DataLoader(unlabeled_train_dataset, batch_size= 10, shuffle= True)
 
 for batch in unlabeled_train_loader:
