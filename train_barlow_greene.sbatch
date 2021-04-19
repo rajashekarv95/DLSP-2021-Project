@@ -15,11 +15,11 @@
 set -x 
 
 singularity exec --nv \
---overlay /scratch/rv2138/env/conda_new.ext3:ro \
---overlay /scratch/rv2138/student_dataset.sqsh:ro \
-/scratch/work/public/singularity/cuda11.0-cudnn8-devel-ubuntu18.04.sif \
+--overlay /scratch/sr5768/env/overlay-50G-10M.ext3:ro \
+--overlay /scratch/sr5768/student_dataset.sqsh:ro \
+/scratch/work/public/singularity/cuda10.1-cudnn7-devel-ubuntu18.04.sif \
 bash -c "source /ext3/env.sh
-python3 train_fixmatch.py --checkpoint-path /scratch/rv2138/checkpoints/model.pth.tar \
+python3 train_fixmatch.py --checkpoint-path /scratch/sr5768/checkpoints/model.pth.tar \
 --num-epochs 1 \
 --batch-size 64 \
 --num-epochs 120 \

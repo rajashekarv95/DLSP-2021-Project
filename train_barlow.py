@@ -144,7 +144,12 @@ def main():
 		
 	# dataset_folder = dataset_folder = "./dataset" 
 	unlabeled_train_dataset = CustomDataset(root= dataset_folder, split = "unlabeled", transform = TransformBarlowTwins())
+<<<<<<< HEAD
 	unlabeled_train_loader = DataLoader(unlabeled_train_dataset, batch_size= batch_size, shuffle= True, num_workers= 4)
+=======
+	unlabeled_train_loader = DataLoader(unlabeled_train_dataset,
+	 batch_size= 512, shuffle= True)
+>>>>>>> aa019316770332e5996e9573a9bd7d6e1da728c9
 
 	# model = resnet34(pretrained=False, num_classes = num_classes)
 	model = BarlowTwins(args)
