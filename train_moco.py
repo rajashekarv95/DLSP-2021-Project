@@ -61,6 +61,13 @@ def main():
 
 	start_epoch = 0
 
+	if torch.cuda.device_count() > 1:
+		print("Let's use", torch.cuda.device_count(), "GPUs!")
+		model = torch.nn.DataParallel(model)
+		multi_gpu = 1
+	else:
+		multi_gpu = 0
+
 	moco_model = moco_model.to(device)
 
 	losses = Average()
@@ -84,12 +91,20 @@ def main():
 			if batch_idx % 25 == 0:
 				print(f"Epoch number: {epoch}, loss_avg: {losses.avg}, loss: {loss.item()}, lr: {optimizer.param_groups[0]['lr']}", flush= True)
 
-		save_checkpoint({
-			'epoch': epoch + 1,
-			'state_dict': moco_model.state_dict(),
-			'optimizer': optimizer.state_dict(),
-			'scheduler': scheduler.state_dict()
-		}, args.checkpoint_path)
+		if multi_gpu == 1:
+			save_checkpoint({
+				'epoch': epoch + 1,
+				'state_dict': moco_model.module.state_dict(),
+				'optimizer': optimizer.state_dict(),
+				'scheduler': scheduler.state_dict()
+			}, args.checkpoint_path)
+		else:
+			save_checkpoint({
+				'epoch': epoch + 1,
+				'state_dict': moco_model.state_dict(),
+				'optimizer': optimizer.state_dict(),
+				'scheduler': scheduler.state_dict()
+			}, args.checkpoint_path)
 			
 
 
