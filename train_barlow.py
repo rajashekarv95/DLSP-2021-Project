@@ -17,6 +17,7 @@ import PIL.ImageEnhance
 import PIL.ImageDraw
 from PIL import Image
 from models.resnet import resnet34, resnet18
+from models.barlow_twins import BarlowTwins
 
 import numpy as np
 import torch
@@ -87,7 +88,7 @@ def save_checkpoint(state, checkpoint_path):
 
 def adjust_learning_rate(args, optimizer, loader, step):
 	max_steps = args.num_epochs * len(loader)
-	warmup_steps = 10 * len(loader)
+	warmup_steps = args.warmup_epochs * len(loader)
 	base_lr = args.learning_rate * args.batch_size / 256
 	if step < warmup_steps:
 		lr = base_lr * step / warmup_steps
@@ -117,18 +118,14 @@ def main():
 	parser.add_argument('--lambd', type= float, default= 0.005)
 	parser.add_argument('--momentum', type= float, default= 0.9)
 	parser.add_argument('--weight-decay', type= float, default= 1.5*1e-6)
+	parser.add_argument('--warmup-epochs', type= int, default= 2)
+	parser.add_argument('--scale-loss', type = float, default= 1.0/32.0)
 	args = parser.parse_args()
 
 	dataset_folder = args.dataset_folder
-	batch_size_labeled = args.batch_size
-	mu = args.mu
-	batch_size_unlabeled = mu * args.batch_size
+	batch_size = args.batch_size
 	n_epochs = args.num_epochs
-	n_steps = args.num_steps		
 	num_classes = 800
-	threshold = args.threshold
-	learning_rate = args.learning_rate
-	momentum = args.momentum
 	lambd = args.lambd
 	weight_decay = args.weight_decay
 	checkpoint_path = args.checkpoint_path
@@ -146,13 +143,12 @@ def main():
 		return x.flatten()[:-1].view(n - 1, n + 1)[:, 1:].flatten()
 		
 	# dataset_folder = dataset_folder = "./dataset" 
-	train_transform, val_transform = get_transforms()
 	unlabeled_train_dataset = CustomDataset(root= dataset_folder, split = "unlabeled", transform = TransformBarlowTwins())
-	unlabeled_train_loader = DataLoader(unlabeled_train_dataset,
-	 batch_size= 512, shuffle= True)
+	unlabeled_train_loader = DataLoader(unlabeled_train_dataset, batch_size= batch_size, shuffle= True, num_workers= 4)
 
-	model = resnet18(pretrained=False, num_classes = 800)
-	optimizer = LARS(model.parameters(), lr=0, weight_decay=args.weight_decay,
+	# model = resnet34(pretrained=False, num_classes = num_classes)
+	model = BarlowTwins(args)
+	optimizer = LARS(model.parameters(), lr=0, weight_decay=weight_decay,
 					 weight_decay_filter=exclude_bias_and_norm,
 					 lars_adaptation_filter=exclude_bias_and_norm)
 
@@ -176,48 +172,54 @@ def main():
 
 	model.train()
 	losses = Average()
-	losses_l = Average()
-	losses_u = Average()
-	mask_probs = Average()
 
-
+	scaler = torch.cuda.amp.GradScaler()
+	model = torch.nn.SyncBatchNorm.convert_sync_batchnorm(model)
 	for epoch in tqdm(range(start_epoch, n_epochs)):
 
 		# for batch_idx in tqdm(range(n_steps)): ## CHECK
-		loss_epoch = 0.0
-		loss_lab_epoch = 0.0
-		loss_unlab_epoch = 0.0
 
-		for batch_idx, batch in tqdm(enumerate(unlabeled_train_loader)):
+		for batch_idx, batch in enumerate(tqdm(unlabeled_train_loader)):
 			y_a = batch[0][0].to(device)
 			y_b = batch[0][1].to(device)
-			y_cat = torch.cat((y_a, y_b), dim = 0)
+			# y_cat = torch.cat((y_a, y_b), dim = 0)
+			
+			# with torch.cuda.amp.autocast():
+			# 	z_cat = model(y_cat)
 
-			z_cat = model(y_cat)
+			# 	z_a, z_b = torch.chunk(z_cat, chunks = 2, dim = 0)
+			# 	print(z_a[:2], z_b[:2])
 
-			z_a, z_b = torch.chunk(z_cat, chunks = 2, dim = 0)
+			# 	z_a_norm = (z_a - (torch.mean(z_a, dim = 1, keepdim=True))) / torch.std(z_a, dim = 1, keepdim=True)
+			# 	z_b_norm = (z_b - (torch.mean(z_b, dim = 1, keepdim=True))) / torch.std(z_b, dim = 1, keepdim=True)
 
-			z_a_norm = (z_a - (torch.mean(z_a, dim = 1, keepdim=True))) / torch.std(z_a, dim = 1, keepdim=True)
-			z_b_norm = (z_b - (torch.mean(z_b, dim = 1, keepdim=True))) / torch.std(z_b, dim = 1, keepdim=True)
+			# 	c = torch.matmul(z_a_norm.T, z_b_norm)
+			# 	c_diff = torch.pow(c - torch.eye(c.size()[0]).to(device), 2)
 
-			c = torch.matmul(z_a_norm.T, z_b_norm)
-			c_diff = torch.pow(c - torch.eye(c.size()[0]).to(device), 2)
+			# 	loss = torch.mean(torch.mul(off_diagonal(c_diff), lambd))
 
-			loss = torch.sum(torch.mul(off_diagonal(c_diff), lambd))
+			lr = adjust_learning_rate(args, optimizer, unlabeled_train_loader, epoch * len(unlabeled_train_loader) + batch_idx)
+			optimizer.zero_grad()
+			with torch.cuda.amp.autocast():
+				loss = model.forward(y_a, y_b)
+			scaler.scale(loss).backward()
+			scaler.step(optimizer)
+			scaler.update()
 
 			losses.update(loss.item())
 			# losses_l.update(loss_labeled.item())
 			# losses_u.update(loss_unlabeled.item())
 			# mask_probs.update(mask.mean().item())
 
-			lr = adjust_learning_rate(args, optimizer, unlabeled_train_loader, batch_idx)
-			optimizer.zero_grad()
-			loss.backward()
-			optimizer.step()
+			# lr = adjust_learning_rate(args, optimizer, unlabeled_train_loader, epoch * len(unlabeled_train_loader) + batch_idx)
+			# optimizer.zero_grad()
+			# scaler.scale(loss).backward()
+			# scaler.step(optimizer)
+			# scaler.update()
 			# scheduler.step()
 
 			if batch_idx % 25 == 0:
-				print(f"Epoch number: {epoch}, loss_avg: {losses.avg}, loss: {loss.item()}", flush= True)
+				print(f"Epoch number: {epoch}, loss_avg: {losses.avg}, loss: {loss.item()}, lr: {lr}", flush= True)
 		
 		save_checkpoint({
 				'epoch': epoch + 1,
