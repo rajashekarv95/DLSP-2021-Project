@@ -121,7 +121,7 @@ def main():
 	# print("printed model keys")
 
 	if args.wide == 0:
-		barlow = torch.nn.DataParallel(barlow)
+		model = torch.nn.DataParallel(model)
 
 	model.load_state_dict(checkpoint['state_dict'])
 	# print(model_barlow)
