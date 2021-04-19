@@ -65,7 +65,7 @@ def main():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--checkpoint-path', type=str, default= "./checkpoints/model_transfer.pth.tar")
 	parser.add_argument('--transfer-path', type=str, default= "./checkpoints/model_barlow.pth.tar")
-	parser.add_argument('--batch-size', type=int, default= 512)
+	parser.add_argument('--batch-size', type=int, default= 10)
 	parser.add_argument('--num-epochs', type=int, default= 100)
 	parser.add_argument('--dataset-folder', type= str, default= "./dataset")
 	parser.add_argument('--learning-rate-classifier', type = float, default= 0.001)
@@ -170,6 +170,7 @@ def main():
 			labels = batch[1].to(device)
 
 			model_out = model(img)
+			print(model_out.size())
 			logits = classifier(model_out)
 			loss = criterion(logits, labels)
 
