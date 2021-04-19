@@ -148,7 +148,8 @@ def main():
 	# dataset_folder = dataset_folder = "./dataset" 
 	train_transform, val_transform = get_transforms()
 	unlabeled_train_dataset = CustomDataset(root= dataset_folder, split = "unlabeled", transform = TransformBarlowTwins())
-	unlabeled_train_loader = DataLoader(unlabeled_train_dataset, batch_size= 512, shuffle= True)
+	unlabeled_train_loader = DataLoader(unlabeled_train_dataset,
+	 batch_size= 512, shuffle= True)
 
 	model = resnet18(pretrained=False, num_classes = 800)
 	optimizer = LARS(model.parameters(), lr=0, weight_decay=args.weight_decay,
