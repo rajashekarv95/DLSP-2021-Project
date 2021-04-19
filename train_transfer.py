@@ -126,7 +126,7 @@ def main():
 	model.load_state_dict(checkpoint['state_dict'])
 	# print(model_barlow)
 	if args.wide == 0:
-		model = model.backbone
+		model = model.module.backbone
 	else:
 		model = model.backbone
 
