@@ -99,9 +99,9 @@ def main():
 	val_loader = DataLoader(val_dataset, batch_size= batch_size_val, shuffle= False, num_workers= 4)
 
 	resnet = lightly.models.ResNetGenerator('resnet-18', 1, num_splits=0)
-	backbone = nn.Sequential(
+	backbone = torch.nn.Sequential(
 			*list(resnet.children())[:-1],
-			nn.AdaptiveAvgPool2d(1),
+			torch.nn.AdaptiveAvgPool2d(1),
 		)
 
 	if args.model_name == "moco":
