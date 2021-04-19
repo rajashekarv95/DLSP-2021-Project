@@ -170,7 +170,9 @@ def main():
 			labels = batch[1].to(device)
 
 			model_out = model(img)
-			print(model_out.size())
+			if args.model_name == "moco":
+				model_out = model_out.squeeze()
+				model_out = torch.nn.functional.normalize(model_out, dim=1)
 			logits = classifier(model_out)
 			loss = criterion(logits, labels)
 
