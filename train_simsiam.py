@@ -65,29 +65,29 @@ path_to_data = './dataset/'
 
 # define the augmentations for self-supervised learning
 collate_fn = lightly.data.ImageCollateFunction(
-    input_size=input_size,
-    # require invariance to flips and rotations
-    hf_prob=0.5,
-    vf_prob=0.5,
-    rr_prob=0.5,
-    # satellite images are all taken from the same height
-    # so we use only slight random cropping
-    min_scale=0.5,
-    # use a weak color jitter for invariance w.r.t small color changes
-    cj_prob=0.2,
-    cj_bright=0.1,
-    cj_contrast=0.1,
-    cj_hue=0.1,
-    cj_sat=0.1,
+	input_size=input_size,
+	# require invariance to flips and rotations
+	hf_prob=0.5,
+	vf_prob=0.5,
+	rr_prob=0.5,
+	# satellite images are all taken from the same height
+	# so we use only slight random cropping
+	min_scale=0.5,
+	# use a weak color jitter for invariance w.r.t small color changes
+	cj_prob=0.2,
+	cj_bright=0.1,
+	cj_contrast=0.1,
+	cj_hue=0.1,
+	cj_sat=0.1,
 )
 
 test_transforms = torchvision.transforms.Compose([
-    torchvision.transforms.Resize((input_size, input_size)),
-    torchvision.transforms.ToTensor(),
-    torchvision.transforms.Normalize(
-        mean=lightly.data.collate.imagenet_normalize['mean'],
-        std=lightly.data.collate.imagenet_normalize['std'],
-    )
+	torchvision.transforms.Resize((input_size, input_size)),
+	torchvision.transforms.ToTensor(),
+	torchvision.transforms.Normalize(
+		mean=lightly.data.collate.imagenet_normalize['mean'],
+		std=lightly.data.collate.imagenet_normalize['std'],
+	)
 ])
 
 def main():
@@ -99,7 +99,6 @@ def main():
 	parser.add_argument('--num-epochs', type=int, default= 10)
 	parser.add_argument('--num-steps', type=int, default= 1)
 	parser.add_argument('--train-from-start', type= int, default= 1)
-
 	parser.add_argument('--dataset-folder', type= str, default= "./dataset")
 	parser.add_argument('--learning-rate', type = float, default= 0.01)
 	parser.add_argument('--threshold', type = float, default= 0.5)
@@ -129,94 +128,95 @@ def main():
 	else:
 		device = torch.device("cpu")
 
-    train_transform, val_transform = get_transforms()
-    unlabeled_train_dataset = CustomDataset(root= dataset_folder, split = "unlabeled", transform = TransformBarlowTwins())
+	train_transform, val_transform = get_transforms()
+	unlabeled_train_dataset = CustomDataset(root= dataset_folder, split = "unlabeled", transform = TransformBarlowTwins())
 # create a dataloader for training
-    dataloader_train_simsiam = torch.utils.data.DataLoader(
-        unlabeled_train_dataset,
-        batch_size=512,
-        shuffle=True)
-        # collate_fn=collate_fn)
-        # drop_last=True,
-        # num_workers=1
-    # )
+	dataloader_train_simsiam = torch.utils.data.DataLoader(
+		unlabeled_train_dataset,
+		batch_size=512,
+		shuffle=True)
+		# collate_fn=collate_fn)
+		# drop_last=True,
+		# num_workers=1
+	# )
 
-    resnet = torchvision.models.resnet18()
-    backbone = nn.Sequential(*list(resnet.children())[:-1])
+	resnet = torchvision.models.resnet18()
+	backbone = nn.Sequential(*list(resnet.children())[:-1])
 
-    # create the SimSiam model using the backbone from above
-    model = lightly.models.SimSiam(
-        backbone,
-        num_ftrs=num_ftrs,
-        proj_hidden_dim=pred_hidden_dim,
-        pred_hidden_dim=pred_hidden_dim,
-        out_dim=out_dim,
-        num_mlp_layers=num_mlp_layers
-    )
+	# create the SimSiam model using the backbone from above
+	model = lightly.models.SimSiam(
+		backbone,
+		num_ftrs=num_ftrs,
+		proj_hidden_dim=pred_hidden_dim,
+		pred_hidden_dim=pred_hidden_dim,
+		out_dim=out_dim,
+		num_mlp_layers=num_mlp_layers
+	)
 
-    criterion = lightly.loss.SymNegCosineSimilarityLoss()
+	criterion = lightly.loss.SymNegCosineSimilarityLoss()
 
-    # scale the learning rate
-    lr = 0.05 * batch_size / 256
-    # use SGD with momentum and weight decay
-    optimizer = torch.optim.SGD(
-        model.parameters(),
-        lr=lr,
-        momentum=0.9,
-        weight_decay=5e-4
-    )
+	# scale the learning rate
+	lr = 0.05 * batch_size / 256
+	# use SGD with momentum and weight decay
+	optimizer = torch.optim.SGD(
+		model.parameters(),
+		lr=lr,
+		momentum=0.9,
+		weight_decay=5e-4
+	)
 
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    model.to(device)
+	device = 'cuda' if torch.cuda.is_available() else 'cpu'
+	model.to(device)
 
-    avg_loss = 0.
-    avg_output_std = 0.
+	avg_loss = 0.
+	avg_output_std = 0.
 
-    start_epoch = 0 
-    n_epochs = 2
-    for epoch in tqdm(range(start_epoch, n_epochs)):
+	start_epoch = 0 
 
-        for batch_idx, batch in tqdm(enumerate(dataloader_train_simsiam)):
+	model.train()
+	for epoch in tqdm(range(start_epoch, n_epochs)):
 
-            # move images to the gpu
-            x0 = batch[0][0].to(device)
-            x1 = batch[0][1].to(device)
+		for batch_idx, batch in tqdm(enumerate(dataloader_train_simsiam)):
 
-            # run the model on both transforms of the images
-            # the output of the simsiam model is a y containing the predictions
-            # and projections for each input x
-            y0, y1 = model(x0, x1)
+			# move images to the gpu
+			x0 = batch[0][0].to(device)
+			x1 = batch[0][1].to(device)
 
-            # backpropagation
-            loss = criterion(y0, y1)
-            loss.backward()
+			# run the model on both transforms of the images
+			# the output of the simsiam model is a y containing the predictions
+			# and projections for each input x
+			y0, y1 = model(x0, x1)
 
-            optimizer.step()
-            optimizer.zero_grad()
+			# backpropagation
+			loss = criterion(y0, y1)
+			loss.backward()
 
-            # calculate the per-dimension standard deviation of the outputs
-            # we can use this later to check whether the embeddings are collapsing
-            output, _ = y0
-            output = output.detach()
-            output = torch.nn.functional.normalize(output, dim=1)
+			optimizer.step()
+			optimizer.zero_grad()
 
-            output_std = torch.std(output, 0)
-            output_std = output_std.mean()
+			# calculate the per-dimension standard deviation of the outputs
+			# we can use this later to check whether the embeddings are collapsing
+			output, _ = y0
+			output = output.detach()
+			output = torch.nn.functional.normalize(output, dim=1)
 
-            # use moving averages to track the loss and standard deviation
-            w = 0.9
-            avg_loss = w * avg_loss + (1 - w) * loss.item()
-            avg_output_std = w * avg_output_std + (1 - w) * output_std.item()
+			output_std = torch.std(output, 0)
+			output_std = output_std.mean()
 
-            print('avg_loss:', avg_loss)
+			# use moving averages to track the loss and standard deviation
+			w = 0.9
+			avg_loss = w * avg_loss + (1 - w) * loss.item()
+			avg_output_std = w * avg_output_std + (1 - w) * output_std.item()
 
-        # the level of collapse is large if the standard deviation of the l2
-        # normalized output is much smaller than 1 / sqrt(dim)
-        collapse_level = max(0., 1 - math.sqrt(out_dim) * avg_output_std)
-        # print intermediate results
-        print(f'[Epoch {e:3d}] '
-            f'Loss = {avg_loss:.2f} | '
-            f'Collapse Level: {collapse_level:.2f} / 1.00')
+			print('avg_loss:', avg_loss)
+
+		# the level of collapse is large if the standard deviation of the l2
+		# normalized output is much smaller than 1 / sqrt(dim)
+		collapse_level = max(0., 1 - math.sqrt(out_dim) * avg_output_std)
+		# print intermediate results
+		print(f'[Epoch {e:3d}] '
+			f'Loss = {avg_loss:.2f} | '
+			f'Collapse Level: {collapse_level:.2f} / 1.00')
 
 if __name__ == '__main__':
 	main()
