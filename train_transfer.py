@@ -99,9 +99,13 @@ def main():
 	val_loader = DataLoader(val_dataset, batch_size= batch_size_val, shuffle= False, num_workers= 4)
 
 	resnet = lightly.models.ResNetGenerator('resnet-18', 1, num_splits=0)
+	backbone = nn.Sequential(
+			*list(resnet.children())[:-1],
+			nn.AdaptiveAvgPool2d(1),
+		)
 
 	if args.model_name == "moco":
-		model = lightly.models.MoCo(resnet, num_ftrs= 512, m=0.99, batch_shuffle=True)
+		model = lightly.models.MoCo(backbone, num_ftrs= 512, m=0.99, batch_shuffle=True)
 	else:
 		if args.wide == 1:
 			model = lightly.models.BarlowTwins(wide_resnet50_2(pretrained= False), num_ftrs= 2048)
