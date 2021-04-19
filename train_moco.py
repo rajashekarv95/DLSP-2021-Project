@@ -55,7 +55,7 @@ def main():
 		temperature=0.1,
 		memory_bank_size=args.memory_bank_size)
 
-	optimizer = torch.optim.SGD(moco_model.parameters(), lr=6e-2,
+	optimizer = torch.optim.SGD(moco_model.parameters(), lr=args.learning_rate,
 								momentum=0.9, weight_decay=5e-4)
 	scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, args.num_epochs)
 
