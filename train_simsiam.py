@@ -177,7 +177,7 @@ def main():
 
 		# the level of collapse is large if the standard deviation of the l2
 		# normalized output is much smaller than 1 / sqrt(dim)
-		collapse_level = max(0., 1 - math.sqrt(out_dim) * avg_output_std)
+		collapse_level = max(0., 1 - math.sqrt(args.out_dim) * avg_output_std)
 		# print intermediate results
 		print(f'[Epoch {e:3d}] '
 			f'Loss = {avg_loss:.2f} | '
