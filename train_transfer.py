@@ -44,9 +44,9 @@ class Classifier(torch.nn.Module):
 		self.fc2 = torch.nn.Linear(4096, 8192)
 		self.fc3 = torch.nn.Linear(8192, 4096)
 		self.fc4 = torch.nn.Linear(4096, 800)
-		self.bn1 = nn.BatchNorm1d(4096)
-		self.bn2 = nn.BatchNorm1d(8192)
-		self.bn3 = nn.BatchNorm1d(4096)
+		self.bn1 = torch.nn.BatchNorm1d(4096)
+		self.bn2 = torch.nn.BatchNorm1d(8192)
+		self.bn3 = torch.nn.BatchNorm1d(4096)
 
 	def forward(self, x):
 		# TODO
