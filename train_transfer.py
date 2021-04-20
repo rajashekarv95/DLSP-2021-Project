@@ -40,9 +40,9 @@ class Classifier(torch.nn.Module):
 
 	def __init__(self, ip):
 		super().__init__()
-		self.fc1 = torch.nn.Linear(ip, 1024)
-		self.fc2 = torch.nn.Linear(1024, 2048)
-		self.fc3 = torch.nn.Linear(2048, 4096)
+		self.fc1 = torch.nn.Linear(ip, 4096)
+		self.fc2 = torch.nn.Linear(4096, 8192)
+		self.fc3 = torch.nn.Linear(8192, 4096)
 		self.fc4 = torch.nn.Linear(4096, 800)
 	
 
