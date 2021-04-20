@@ -179,7 +179,7 @@ def main():
 		# normalized output is much smaller than 1 / sqrt(dim)
 		collapse_level = max(0., 1 - math.sqrt(args.out_dim) * avg_output_std)
 		# print intermediate results
-		print(f'[Epoch {e:3d}] '
+		print(f'[Epoch {epoch:3d}] '
 			f'Loss = {avg_loss:.2f} | '
 			f'Collapse Level: {collapse_level:.2f} / 1.00')
 
