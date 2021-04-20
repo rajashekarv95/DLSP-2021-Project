@@ -151,14 +151,6 @@ def main():
 
 	criterion = lightly.loss.BarlowTwinsLoss()
 
-	if torch.cuda.device_count() > 1:
-		print("Let's use", torch.cuda.device_count(), "GPUs!")
-		model = torch.nn.DataParallel(model)
-		criterion = torch.nn.DataParallel(criterion)
-
-	model = model.to(device)
-	criterion = criterion.to(device)
-
 	start_epoch = 0
 
 	if train_from_start == 0:
@@ -176,6 +168,14 @@ def main():
 	model.train()
 	losses = Average()
 
+	if torch.cuda.device_count() > 1:
+		print("Let's use", torch.cuda.device_count(), "GPUs!")
+		model = torch.nn.DataParallel(model)
+		criterion = torch.nn.DataParallel(criterion)
+
+	model = model.to(device)
+	criterion = criterion.to(device)
+
 	#TODO
 	# scaler = torch.cuda.amp.GradScaler()
 	# model = torch.nn.SyncBatchNorm.convert_sync_batchnorm(model)
@@ -189,7 +189,7 @@ def main():
 			y_b = batch[0][1].to(device)
 			
 			z_a, z_b = model(y_a, y_b)
-			loss = criterion(z_a, z_b).sum()
+			loss = criterion(z_a, z_b).mean()
 
 			lr = adjust_learning_rate(args, optimizer, unlabeled_train_loader, epoch * len(unlabeled_train_loader) + batch_idx)
 			optimizer.zero_grad()
@@ -204,12 +204,18 @@ def main():
 
 			if batch_idx % 25 == 0:
 				print(f"Epoch number: {epoch}, loss_avg: {losses.avg}, loss: {loss.item()}, lr: {lr}", flush= True)
-		
-		save_checkpoint({
-				'epoch': epoch + 1,
-				'state_dict': model.state_dict(),
-				'optimizer': optimizer.state_dict()
-			}, checkpoint_path)
+		if torch.cuda.device_count() > 1:
+			save_checkpoint({
+					'epoch': epoch + 1,
+					'state_dict': model.module.state_dict(),
+					'optimizer': optimizer.state_dict()
+				}, checkpoint_path)
+		else:
+			save_checkpoint({
+					'epoch': epoch + 1,
+					'state_dict': model.module.state_dict(),
+					'optimizer': optimizer.state_dict()
+				}, checkpoint_path)
 
 
 if __name__ == '__main__':
