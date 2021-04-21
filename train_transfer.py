@@ -40,13 +40,13 @@ class Classifier(torch.nn.Module):
 
 	def __init__(self, ip, dp):
 		super().__init__()
-		self.fc1 = torch.nn.Linear(ip, 16384)
-		self.fc2 = torch.nn.Linear(16384, 16384)
-		self.fc3 = torch.nn.Linear(16384, 16384)
-		self.fc4 = torch.nn.Linear(16384, 800)
-		self.bn1 = torch.nn.BatchNorm1d(16384)
-		self.bn2 = torch.nn.BatchNorm1d(16384)
-		self.bn3 = torch.nn.BatchNorm1d(16384)
+		self.fc1 = torch.nn.Linear(ip, 8192)
+		self.fc2 = torch.nn.Linear(8192, 8192)
+		self.fc3 = torch.nn.Linear(8192, 8192)
+		self.fc4 = torch.nn.Linear(8192, 800)
+		self.bn1 = torch.nn.BatchNorm1d(8192)
+		self.bn2 = torch.nn.BatchNorm1d(8192)
+		self.bn3 = torch.nn.BatchNorm1d(8192)
 		self.dropout = torch.nn.Dropout(dp)
 
 	def forward(self, x):
