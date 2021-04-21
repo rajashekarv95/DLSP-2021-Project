@@ -173,7 +173,7 @@ def main():
 			avg_loss = w * avg_loss + (1 - w) * loss.item()
 			avg_output_std = w * avg_output_std + (1 - w) * output_std.item()
 
-			print('avg_loss:', avg_loss)
+			print('loss.item():', loss.item())
 
 		# the level of collapse is large if the standard deviation of the l2
 		# normalized output is much smaller than 1 / sqrt(dim)
