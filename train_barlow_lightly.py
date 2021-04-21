@@ -213,7 +213,7 @@ def main():
 		else:
 			save_checkpoint({
 					'epoch': epoch + 1,
-					'state_dict': model.module.state_dict(),
+					'state_dict': model.state_dict(),
 					'optimizer': optimizer.state_dict()
 				}, checkpoint_path)
 
