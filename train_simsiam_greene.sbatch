@@ -21,7 +21,7 @@ singularity exec --nv \
 /scratch/work/public/singularity/cuda10.1-cudnn7-devel-ubuntu18.04.sif \
 bash -c "source /ext3/env.sh
 python3 train_simsiam.py --checkpoint-path /scratch/sr5768/checkpoints/model.pth.tar \
---num-epochs 1 \
+--num-epochs 20 \
 --batch-size 64 \
 --dataset-folder /dataset \
 " 
