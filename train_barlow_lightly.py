@@ -180,6 +180,8 @@ def main():
 	# scaler = torch.cuda.amp.GradScaler()
 	# model = torch.nn.SyncBatchNorm.convert_sync_batchnorm(model)
 
+	optimizer = optimizer.to(device)
+	
 	for epoch in tqdm(range(start_epoch, n_epochs)):
 
 		# for batch_idx in tqdm(range(n_steps)): ## CHECK
