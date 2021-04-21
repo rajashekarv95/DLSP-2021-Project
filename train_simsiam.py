@@ -118,6 +118,8 @@ def main():
 		num_mlp_layers=args.num_mlp_layers
 	)
 
+	model = model.to(device)
+
 	criterion = lightly.loss.SymNegCosineSimilarityLoss()
 
 	# scale the learning rate
