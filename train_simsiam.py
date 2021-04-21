@@ -175,7 +175,7 @@ def main():
 			avg_loss = w * avg_loss + (1 - w) * loss.item()
 			avg_output_std = w * avg_output_std + (1 - w) * output_std.item()
 
-			print(f'loss.item():', loss.item())
+			print(f'loss.item():', loss.item(), flush=True)
 
 		# the level of collapse is large if the standard deviation of the l2
 		# normalized output is much smaller than 1 / sqrt(dim)
@@ -183,7 +183,7 @@ def main():
 		# print intermediate results
 		print(f'[Epoch {epoch:3d}] '
 			f'Loss = {avg_loss:.2f} | '
-			f'Collapse Level: {collapse_level:.2f} / 1.00')
+			f'Collapse Level: {collapse_level:.2f} / 1.00', flush=True)
 
 		save_checkpoint({
 				'epoch': epoch + 1,
