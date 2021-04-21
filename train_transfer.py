@@ -126,13 +126,13 @@ def main():
 	# print(model_barlow.state_dict().keys())
 	# print("printed model keys")
 
-	if args.wide == 0:
-		model = torch.nn.DataParallel(model)
+	# if args.wide == 0:
+		# model = torch.nn.DataParallel(model)
 
 	model.load_state_dict(checkpoint['state_dict'])
 	# print(model_barlow)
 	if args.wide == 0:
-		model = model.module.backbone
+		model = model.backbone
 	else:
 		model = model.backbone
 
