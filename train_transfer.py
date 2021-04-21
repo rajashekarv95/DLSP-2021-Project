@@ -38,7 +38,7 @@ def exclude_bias_and_norm(p):
 
 class Classifier(torch.nn.Module):
 
-	def __init__(self, ip):
+	def __init__(self, ip, dp):
 		super().__init__()
 		self.fc1 = torch.nn.Linear(ip, 4096)
 		self.fc2 = torch.nn.Linear(4096, 8192)
@@ -47,7 +47,7 @@ class Classifier(torch.nn.Module):
 		self.bn1 = torch.nn.BatchNorm1d(4096)
 		self.bn2 = torch.nn.BatchNorm1d(8192)
 		self.bn3 = torch.nn.BatchNorm1d(4096)
-		self.dropout = torch.nn.Dropout(0.5)
+		self.dropout = torch.nn.Dropout(dp)
 
 	def forward(self, x):
 		# TODO
@@ -81,6 +81,7 @@ def main():
 	parser.add_argument('--fine-tune', type= int, default= 0)
 	parser.add_argument('--wide', type= int, default= 0)
 	parser.add_argument('--model-name', type= str, default="moco")
+	parser.add_argument('--dropout', type= float, default= 0)
 	args = parser.parse_args()
 
 	dataset_folder = args.dataset_folder
@@ -137,9 +138,9 @@ def main():
 		model = model.backbone
 
 	if args.wide == 1:
-		classifier = Classifier(2048)
+		classifier = Classifier(ip = 2048, dp= args.dropout)
 	else:
-		classifier = Classifier(512)
+		classifier = Classifier(ip = 512, dp = args.dropout)
 
 	if torch.cuda.device_count() > 1:
 		print("Let's use", torch.cuda.device_count(), "GPUs!")
