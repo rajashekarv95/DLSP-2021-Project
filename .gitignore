@@ -143,3 +143,4 @@ model.pth
 test_augment.py
 scratch.py
 /lightning_logs/
+/label_request/
