@@ -201,6 +201,7 @@ def main():
 		print(f"Val loss: {val_loss/val_size}, Accuracy: {(100 * correct / total):.2f}%", flush= True)
 
 		if 100 * correct / total > best_val_accuracy:
+			print(f"Saving the best model with {} accuracy", flush= True)
 			best_val_accuracy = 100 * correct / total
 			best_val_loss = val_loss/val_size
 			save_checkpoint({
