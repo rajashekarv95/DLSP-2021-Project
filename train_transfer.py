@@ -44,6 +44,7 @@ def main():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--checkpoint-path', type=str, default= "./checkpoints/model_transfer.pth.tar")
 	parser.add_argument('--transfer-path', type=str, default= "./checkpoints/model_barlow.pth.tar")
+	parser.add_argument('--best-path', type= str, default= "./checkpoints/model_barlow_best.pth.tar")
 	parser.add_argument('--batch-size', type=int, default= 10)
 	parser.add_argument('--num-epochs', type=int, default= 100)
 	parser.add_argument('--dataset-folder', type= str, default= "./dataset")
@@ -139,6 +140,8 @@ def main():
 
 	criterion = torch.nn.CrossEntropyLoss().to(device)
 
+	best_val_accuracy = 25.0 #TODO
+
 	for epoch in tqdm(range(start_epoch, n_epochs)):
 		if args.fine_tune:
 			model.train()
@@ -196,6 +199,19 @@ def main():
 				val_size += 1
 				# break
 		print(f"Val loss: {val_loss/val_size}, Accuracy: {(100 * correct / total):.2f}%", flush= True)
+
+		if 100 * correct / total > best_val_accuracy:
+			best_val_accuracy = 100 * correct / total
+			best_val_loss = val_loss/val_size
+			save_checkpoint({
+				'epoch': epoch + 1,
+				'model_state_dict': model.state_dict(),
+				'classifier_state_dict': classifier.state_dict(),
+				'optimizer': optimizer.state_dict(),
+				'scheduler': scheduler.state_dict(),
+				'best_val_accuracy': best_val_accuracy,
+				'best_val_loss': best_val_loss
+			}, checkpoint_path)
 	
 if __name__ == '__main__':
 	main()
