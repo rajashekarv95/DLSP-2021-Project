@@ -212,7 +212,7 @@ def main():
 				'scheduler': scheduler.state_dict(),
 				'best_val_accuracy': best_val_accuracy,
 				'best_val_loss': best_val_loss
-			}, checkpoint_path)
+			}, args.best_path)
 	
 if __name__ == '__main__':
 	main()
