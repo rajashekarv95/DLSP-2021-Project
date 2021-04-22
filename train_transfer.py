@@ -22,6 +22,7 @@ from dataloader import CustomDataset
 from transforms import get_transforms
 
 from models.resnet_barlow import resnet34, resnet18, wide_resnet50_2
+from models.classifier import Classifier
 
 from utils.misc import Average
 
@@ -35,34 +36,6 @@ torch.backends.cudnn.deterministic=True
 
 def exclude_bias_and_norm(p):
 	return p.ndim == 1
-
-class Classifier(torch.nn.Module):
-
-	def __init__(self, ip, dp):
-		super().__init__()
-		self.fc1 = torch.nn.Linear(ip, 8192)
-		self.fc2 = torch.nn.Linear(8192, 8192)
-		self.fc3 = torch.nn.Linear(8192, 8192)
-		self.fc4 = torch.nn.Linear(8192, 800)
-		self.bn1 = torch.nn.BatchNorm1d(8192)
-		self.bn2 = torch.nn.BatchNorm1d(8192)
-		self.bn3 = torch.nn.BatchNorm1d(8192)
-		self.dropout = torch.nn.Dropout(dp)
-
-	def forward(self, x):
-		# TODO
-		x = self.bn1(self.fc1(x))
-		x = F.relu(x)
-		x = self.dropout(x)
-		x = self.bn2(self.fc2(x))
-		x = F.relu(x)
-		x = self.dropout(x)
-		x = self.bn3(self.fc3(x))
-		x = F.relu(x)
-		x = self.dropout(x)
-		x = self.fc4(x)
-
-		return x
 
 def save_checkpoint(state, checkpoint_path):
 	torch.save(state, checkpoint_path)
