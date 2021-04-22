@@ -62,8 +62,8 @@ def main():
 
 	model.eval()
 	classifier.eval()
-	entropy_all = torch.tensor([])
-	idx_all = torch.tensor([])
+	entropy_all = torch.tensor([]).to(device)
+	idx_all = torch.tensor([]).to(device)
 	with torch.no_grad():
 		for batch_idx, batch in enumerate(tqdm(unlabeled_dataloader)):
 			img = batch[0].to(device)
