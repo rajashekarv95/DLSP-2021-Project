@@ -79,8 +79,6 @@ def main():
 			idx_all = torch.cat((idx_all, idx), dim = 0)
 			print(entropy_all)
 			print(idx_all)
-			if batch_idx == 1:
-				break
 		
 		sort_idx = torch.argsort(entropy_all, descending= True)
 		# print(idx_all[sort_idx])
