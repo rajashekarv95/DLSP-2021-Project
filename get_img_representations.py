@@ -18,6 +18,7 @@ def main():
 	parser.add_argument('--batch-size', type= int, default= 512)
 	parser.add_argument('--wide' ,type= int, default= 0)
 	parser.add_argument('--dropout', type= float, default= 0.0)
+	parser.add_argument('--final', type= int, default= 0)
 	args = parser.parse_args()
 
 	if torch.cuda.is_available():
@@ -59,8 +60,10 @@ def main():
 	with torch.no_grad():
 		for batch_idx, batch in enumerate(tqdm(labeled_dataloader)):
 			img = batch[0].to(device)
-
-			logits = model(img)
+			if args.final:
+				logits = classifier(model(img))
+			else:
+				logits = model(img)
 			label_rep = torch.cat((label_rep, logits), dim = 0)
 		print("Writing labeled representations to file", flush= True)
 		lab_path = args.out_path + "lab_rep.pt"
@@ -69,7 +72,11 @@ def main():
 		for batch_idx, batch in enumerate(tqdm(unlabeled_dataloader)):
 			img = batch[0].to(device)
 
-			logits = model(img)
+			if args.final:
+				logits = classifier(model(img))
+			else:
+				logits = model(img)
+				
 			unlabel_rep = torch.cat((unlabel_rep, logits), dim = 0)
 		print("Writing unlabeled representations to file", flush= True)
 		unlab_path = args.out_path + "unlab_rep.pt"
