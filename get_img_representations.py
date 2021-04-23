@@ -54,33 +54,43 @@ def main():
 
 	model.eval()
 	classifier.eval()
-	label_rep = torch.tensor([]).to(device)
-	unlabel_rep = torch.tensor([]).to(device)
+	label_rep_model = torch.tensor([]).to(device)
+	label_rep_clf = torch.tensor([]).to(device)
+	unlabel_rep_model = torch.tensor([]).to(device)
+	unlabel_rep_clf = torch.tensor([]).to(device)
 
 	with torch.no_grad():
 		for batch_idx, batch in enumerate(tqdm(labeled_dataloader)):
 			img = batch[0].to(device)
-			if args.final:
-				logits = classifier(model(img))
-			else:
-				logits = model(img)
-			label_rep = torch.cat((label_rep, logits), dim = 0)
+			
+			logits_model = model(img)
+			logits_classifier = classifier(logits_model)
+
+			label_rep_model = torch.cat((label_rep_model, logits_model), dim = 0)
+			label_rep_clf = torch.cat((label_rep_clf, logits_classifier), dim = 0)
+
 		print("Writing labeled representations to file", flush= True)
-		lab_path = args.out_path + "lab_rep.pt"
-		torch.save(label_rep.detach(), lab_path)
+		lab_path = args.out_path + "lab_rep_model.pt"
+		torch.save(label_rep_model.detach(), lab_path)
+
+		lab_path = args.out_path + "lab_rep_clf.pt"
+		torch.save(label_rep_clf.detach(), lab_path)
 
 		for batch_idx, batch in enumerate(tqdm(unlabeled_dataloader)):
 			img = batch[0].to(device)
 
-			if args.final:
-				logits = classifier(model(img))
-			else:
-				logits = model(img)
-				
-			unlabel_rep = torch.cat((unlabel_rep, logits), dim = 0)
+			logits_model = model(img)
+			logits_classifier = classifier(logits_model)
+
+			unlabel_rep_model = torch.cat((unlabel_rep_model, logits_model), dim = 0)
+			unlabel_rep_clf = torch.cat((unlabel_rep_clf, logits_classifier), dim = 0)
+
 		print("Writing unlabeled representations to file", flush= True)
-		unlab_path = args.out_path + "unlab_rep.pt"
-		torch.save(unlabel_rep.detach(), unlab_path)
+		unlab_path = args.out_path + "unlab_rep_model.pt"
+		torch.save(unlabel_rep_model.detach(), unlab_path)
+
+		unlab_path = args.out_path + "unlab_rep_clf.pt"
+		torch.save(unlabel_rep_clf.detach(), unlab_path)
 
 
 if __name__ == '__main__':
