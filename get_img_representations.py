@@ -60,7 +60,7 @@ def main():
 		for batch_idx, batch in enumerate(tqdm(labeled_dataloader)):
 			img = batch[0].to(device)
 
-			logits = classifier(model(img))
+			logits = model(img)
 			label_rep = torch.cat((label_rep, logits), dim = 0)
 		print("Writing labeled representations to file", flush= True)
 		lab_path = args.out_path + "lab_rep.pt"
@@ -69,7 +69,7 @@ def main():
 		for batch_idx, batch in enumerate(tqdm(unlabeled_dataloader)):
 			img = batch[0].to(device)
 
-			logits = classifier(model(img))
+			logits = model(img)
 			unlabel_rep = torch.cat((unlabel_rep, logits), dim = 0)
 		print("Writing unlabeled representations to file", flush= True)
 		unlab_path = args.out_path + "unlab_rep.pt"
