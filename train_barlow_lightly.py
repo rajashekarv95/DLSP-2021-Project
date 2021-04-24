@@ -156,6 +156,9 @@ def main():
 	model.train()
 	losses = Average()
 
+	model = model.to(device)
+	criterion = criterion.to(device)
+
 	if train_from_start == 0:
 		assert os.path.isfile(checkpoint_path), "Error: no checkpoint directory found!"
 		print("Restoring model from checkpoint")
