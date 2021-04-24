@@ -156,14 +156,6 @@ def main():
 	model.train()
 	losses = Average()
 
-	if torch.cuda.device_count() > 1:
-		print("Let's use", torch.cuda.device_count(), "GPUs!")
-		model = torch.nn.DataParallel(model)
-		criterion = torch.nn.DataParallel(criterion)
-
-	model = model.to(device)
-	criterion = criterion.to(device)
-
 	if train_from_start == 0:
 		assert os.path.isfile(checkpoint_path), "Error: no checkpoint directory found!"
 		print("Restoring model from checkpoint")
@@ -175,6 +167,14 @@ def main():
 		start_epoch = checkpoint['epoch'] - 1
 		model.load_state_dict(checkpoint['state_dict'])
 		optimizer.load_state_dict(checkpoint['optimizer'])
+
+	if torch.cuda.device_count() > 1:
+		print("Let's use", torch.cuda.device_count(), "GPUs!")
+		model = torch.nn.DataParallel(model)
+		criterion = torch.nn.DataParallel(criterion)
+
+	model = model.to(device)
+	criterion = criterion.to(device)
 
 	#TODO
 	# scaler = torch.cuda.amp.GradScaler()
