@@ -22,7 +22,7 @@ def main():
 
 	
 	model = lightly.models.BarlowTwins(wide_resnet50_2(pretrained= False), num_ftrs= 2048)
-	classifier = Classifier(ip = 2048, dp= args.dropout)
+	classifier = Classifier(ip = 2048, dp= 0)
 
 	checkpoint = torch.load(args.source_path, map_location= device) 	
 
