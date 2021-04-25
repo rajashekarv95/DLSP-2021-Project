@@ -33,10 +33,10 @@ def main():
 
 	model_final = torch.nn.Sequential(OrderedDict([
 					('backbone', model),
-					('classifier', classifier)])
+					('classifier', classifier)]))
 	
 
-	torch.save(model_final.state_dict(, args.target_path))
+	torch.save(model_final.state_dict(), args.target_path)
 
 	print("Saved model", flush= True)
 if __name__ == '__main__':
