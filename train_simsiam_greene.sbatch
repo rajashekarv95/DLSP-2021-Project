@@ -3,7 +3,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=3
-#SBATCH --time=10:00:00
+#SBATCH --time=1:00:00
 #SBATCH --mem=32GB
 #SBATCH --gres=gpu:1
 #SBATCH --job-name=torch
@@ -21,7 +21,7 @@ singularity exec --nv \
 /scratch/work/public/singularity/cuda10.1-cudnn7-devel-ubuntu18.04.sif \
 bash -c "source /ext3/env.sh
 python3 train_simsiam.py --checkpoint-path /scratch/sr5768/checkpoints/model.pth.tar \
---num-epochs 20 \
+--num-epochs 1 \
 --batch-size 64 \
 --dataset-folder /dataset \
 " 
