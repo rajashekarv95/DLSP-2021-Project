@@ -2,7 +2,7 @@
 
 from torchvision import models, transforms
 import torch
-# from models.resnet import resnet34, resnet18
+from collections import OrderedDict
 
 team_id = 12
 team_name = "Self Supervised Learners"
@@ -18,6 +18,36 @@ try:
     from torch.hub import load_state_dict_from_url
 except ImportError:
     from torch.utils.model_zoo import load_url as load_state_dict_from_url
+
+import torch.nn.functional as F
+
+class Classifier(torch.nn.Module):
+
+	def __init__(self, ip, dp):
+		super().__init__()
+		self.fc1 = torch.nn.Linear(ip, 8192)
+		self.fc2 = torch.nn.Linear(8192, 8192)
+		self.fc3 = torch.nn.Linear(8192, 8192)
+		self.fc4 = torch.nn.Linear(8192, 800)
+		self.bn1 = torch.nn.BatchNorm1d(8192)
+		self.bn2 = torch.nn.BatchNorm1d(8192)
+		self.bn3 = torch.nn.BatchNorm1d(8192)
+		self.dropout = torch.nn.Dropout(dp)
+
+	def forward(self, x):
+		# TODO
+		x = self.bn1(self.fc1(x))
+		x = F.relu(x)
+		x = self.dropout(x)
+		x = self.bn2(self.fc2(x))
+		x = F.relu(x)
+		x = self.dropout(x)
+		x = self.bn3(self.fc3(x))
+		x = F.relu(x)
+		x = self.dropout(x)
+		x = self.fc4(x)
+
+		return x
 
 
 __all__ = ['ResNet', 'resnet18', 'resnet34', 'resnet50', 'resnet101',
@@ -198,7 +228,6 @@ class ResNet(nn.Module):
         self.layer4 = self._make_layer(block, 512, layers[3], stride=2,
                                        dilate=replace_stride_with_dilation[2])
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-        self.fc = nn.Linear(512 * block.expansion, num_classes)
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
@@ -256,7 +285,6 @@ class ResNet(nn.Module):
 
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
-        x = self.fc(x)
 
         return x
 
@@ -393,7 +421,10 @@ def wide_resnet101_2(pretrained: bool = False, progress: bool = True, **kwargs: 
                    pretrained, progress, **kwargs)
 
 def get_model():
-    return resnet18(pretrained=False, num_classes = 800)
+    model = torch.nn.Sequential(OrderedDict([
+					('backbone', wide_resnet50_2(pretrained= False)),
+					('classifier', Classifier(ip = 2048, dp = 0))]))
+    return model
 
 mean = (0.4836, 0.4527, 0.4011)
 std = (0.3065, 0.2728, 0.2355)
