@@ -5,7 +5,7 @@
 #SBATCH --cpus-per-task=3
 #SBATCH --time=1:00:00
 #SBATCH --mem=32GB
-#SBATCH --gres=gpu:3
+#SBATCH --gres=gpu:1
 #SBATCH --job-name=torch
 #SBATCH --output=./out/train_fm_%j.out                                                                                                                                                                     
 #SBATCH --error=./err/train_fm_%j.err 
