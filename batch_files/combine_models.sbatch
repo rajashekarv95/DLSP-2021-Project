@@ -19,6 +19,6 @@ singularity exec --nv \
 --overlay /scratch/rv2138/student_dataset.sqsh:ro \
 /scratch/work/public/singularity/cuda11.0-cudnn8-devel-ubuntu18.04.sif \
 bash -c "source /ext3/env.sh
-python3 combine_models.py --checkpoint-path /scratch/rv2138/checkpoints/model_transfer_barlow_wide_best.pth.tar \
+python3 combine_models.py --source-path /scratch/rv2138/checkpoints/model_transfer_barlow_wide_best.pth.tar \
 --target-path /scratch/rv2138/model.pth \
 " 
