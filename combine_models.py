@@ -37,7 +37,7 @@ def main():
 					('classifier', classifier)]))
 	
 
-	torch.save(model_final.state_dict(), args.target_path)
+	torch.save(model_final.state_dict(), args.dest_path)
 
 	print("Saved model", flush= True)
 if __name__ == '__main__':
