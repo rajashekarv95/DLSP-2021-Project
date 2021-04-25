@@ -22,6 +22,7 @@ def main():
 
 	
 	model = lightly.models.BarlowTwins(wide_resnet50_2(pretrained= False), num_ftrs= 2048)
+	model = model.backbone
 	classifier = Classifier(ip = 2048, dp= 0)
 
 	checkpoint = torch.load(args.source_path, map_location= device) 	
@@ -29,7 +30,7 @@ def main():
 	model.load_state_dict(checkpoint['model_state_dict'])
 	classifier.load_state_dict(checkpoint['classifier_state_dict'])
 	print(f"Best val accuracy for this model is {checkpoint['best_val_accuracy']}", flush= True)
-	model = model.backbone
+	
 
 	model_final = torch.nn.Sequential(OrderedDict([
 					('backbone', model),
