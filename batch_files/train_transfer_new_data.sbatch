@@ -31,5 +31,6 @@ python3 train_transfer.py --checkpoint-path /scratch/rv2138/checkpoints/model_tr
 --weight-decay 0.01 \
 --wide 1 \
 --model-name barlow \
---dropout 0
+--dropout 0 \
+--new-data 1
 " 
