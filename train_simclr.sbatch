@@ -29,5 +29,5 @@ singularity exec --nv \
 /bin/bash -c "
 source /ext3/env.sh
 conda activate dev
-python run.py -data ./datasets --log-every-n-steps 100 --epochs 1
+python run.py -data /dataset --log-every-n-steps 100 --epochs 1
 "
