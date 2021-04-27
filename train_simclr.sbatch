@@ -3,7 +3,7 @@
 #SBATCH --gres=gpu:1
 #SBATCH --partition=n1s8-t4-1
 #SBATCH --account=dl12
-#SBATCH --time=72:00:00
+#SBATCH --time=24:00:00
 #SBATCH --output=./out/train_fm_%j.out
 #SBATCH --error=./err/train_fm_%j.err
 #SBATCH --exclusive
@@ -29,6 +29,6 @@ singularity exec --nv \
 /bin/bash -c "
 source /ext3/env.sh
 conda activate dev
-python run.py -data /dataset --log-every-n-steps 100 --epochs 200
+python run.py -data /dataset --log-every-n-steps 100 --epochs 100
 python eval.py --checkpoint-path $SCRATCH/checkpoints/model.pth
 "
