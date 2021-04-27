@@ -30,5 +30,5 @@ singularity exec --nv \
 source /ext3/env.sh
 conda activate dev
 python run.py -data /dataset --log-every-n-steps 100 --epochs 10
-python eval.py --checkpoint-path $SCRATCH/DLSP-2021-Project/checkpoints/model.pth
+python eval.py --checkpoint-path $SCRATCH/checkpoints/model.pth
 "
