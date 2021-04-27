@@ -56,6 +56,7 @@ def main():
 	parser.add_argument('--wide', type= int, default= 0)
 	parser.add_argument('--model-name', type= str, default="moco")
 	parser.add_argument('--dropout', type= float, default= 0)
+	parser.add_argument('--new-data', type= int, default= 0)
 	args = parser.parse_args()
 
 	dataset_folder = args.dataset_folder
@@ -72,8 +73,10 @@ def main():
 
 	train_transform, val_transform = get_transforms() #TODO Get new transforms file
 
-
-	labeled_train_dataset = CustomDataset(root= dataset_folder, split = "train", transform = train_transform)
+	if args.new_data == 0:
+		labeled_train_dataset = CustomDataset(root= dataset_folder, split = "train", transform = train_transform)
+	else:
+		labeled_train_dataset = CustomDataset(root= dataset_folder, split = "train_new", transform = train_transform)
 	val_dataset = CustomDataset(root= dataset_folder, split = "val", transform = val_transform)
 
 	labeled_train_loader = DataLoader(labeled_train_dataset, batch_size= batch_size, shuffle= True, num_workers= 4)
