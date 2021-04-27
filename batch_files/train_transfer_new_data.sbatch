@@ -27,7 +27,7 @@ python3 train_transfer.py --checkpoint-path /scratch/rv2138/checkpoints/model_tr
 --fine-tune 1 \
 --dataset-folder /scratch/rv2138/dataset \
 --learning-rate-classifier 0.00001 \
---learning-rate-barlow 0.00001 \
+--learning-rate-model 0.00001 \
 --weight-decay 0.01 \
 --wide 1 \
 --model-name barlow \
