@@ -16,8 +16,6 @@ parser = argparse.ArgumentParser(description='PyTorch SimCLR')
 parser.add_argument('-data', metavar='DIR', default='./dataset',
                     help='path to dataset')
 
-parser.add_argument('--checkpoint-path', type=str, default= "$SCRATCH/checkpoints/model.pth")
-
 parser.add_argument('-a', '--arch', metavar='ARCH', default='resnet18',
                     choices=model_names,
                     help='model architecture: ' +

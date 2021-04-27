@@ -11,13 +11,16 @@ import torch.nn.functional as F
 from torchvision import datasets, transforms, models
 
 from dataloader import CustomDataset
-from submission import get_model, eval_transform, team_id, team_name, email_address
 from models.resnet_simclr import ResNetSimCLR
 
 model_names = sorted(name for name in models.__dict__
                      if name.islower() and not name.startswith("__")
                      and callable(models.__dict__[name]))
 
+
+team_id = 12
+team_name = "Self Supervised Learners"
+email_address = "rv2138@nyu.edu"
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--checkpoint-path', type=str)
