@@ -99,11 +99,18 @@ class SimCLR(object):
 
         logging.info("Training has finished.")
         # save model checkpoints
-        checkpoint_name = 'checkpoint_{:04d}.pth.tar'.format(self.args.epochs)
+        #checkpoint_name = 'checkpoint_{:04d}.pth.tar'.format(self.args.epochs)
+        checkpoint_path = args.checkpoint_path
+        # save_checkpoint({
+        #     'epoch': self.args.epochs,
+        #     'arch': self.args.arch,
+        #     'state_dict': self.model.state_dict(),
+        #     'optimizer': self.optimizer.state_dict(),
+        # }, is_best=False, filename=os.path.join(self.writer.log_dir, checkpoint_name))
         save_checkpoint({
             'epoch': self.args.epochs,
             'arch': self.args.arch,
             'state_dict': self.model.state_dict(),
             'optimizer': self.optimizer.state_dict(),
-        }, is_best=False, filename=os.path.join(self.writer.log_dir, checkpoint_name))
-        logging.info(f"Model checkpoint and metadata has been saved at {self.writer.log_dir}.")
+        }, checkpoint_path)
+        # logging.info(f"Model checkpoint and metadata has been saved at {self.writer.log_dir}.")

@@ -16,6 +16,8 @@ parser = argparse.ArgumentParser(description='PyTorch SimCLR')
 parser.add_argument('-data', metavar='DIR', default='./dataset',
                     help='path to dataset')
 
+parser.add_argument('--checkpoint-path', type=str, default= "$SCRATCH/checkpoints/model.pth")
+
 parser.add_argument('-a', '--arch', metavar='ARCH', default='resnet18',
                     choices=model_names,
                     help='model architecture: ' +
@@ -42,7 +44,7 @@ parser.add_argument('--disable-cuda', action='store_true',
 parser.add_argument('--fp16-precision', action='store_true',
                     help='Whether or not to use 16-bit precision GPU training.')
 
-parser.add_argument('--out_dim', default=128, type=int,
+parser.add_argument('--out_dim', default=800, type=int,
                     help='feature dimension (default: 128)')
 parser.add_argument('--log-every-n-steps', default=100, type=int,
                     help='Log every n steps')
