@@ -95,9 +95,9 @@ class SimCLR(object):
             # warmup for the first 10 epochs
             if epoch_counter >= 10:
                 self.scheduler.step()
-            logging.debug(f"Epoch: {epoch_counter}\tLoss: {loss}\tTop1 accuracy: {top1[0]}")
+            print(f"Epoch: {epoch_counter}\tLoss: {loss}\tTop1 accuracy: {top1[0]}")
 
-        logging.info("Training has finished.")
+        print("Training has finished.")
         # save model checkpoints
         #checkpoint_name = 'checkpoint_{:04d}.pth.tar'.format(self.args.epochs)
         checkpoint_path = "/scratch/sm9669/checkpoints/model.pth"
