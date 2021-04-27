@@ -23,7 +23,7 @@ class ContrastiveLearningDataset:
 
     def get_dataset(self, n_views):
 
-        trainset = CustomDataset(self.root_folder, split = "train",transform=ContrastiveLearningViewGenerator(
+        trainset = CustomDataset(self.root_folder, split='unlabeled',transform=ContrastiveLearningViewGenerator(
                                                                   self.get_simclr_pipeline_transform(32),
                                                                   n_views))
 
