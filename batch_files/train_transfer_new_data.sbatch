@@ -25,7 +25,8 @@ python3 train_transfer.py --checkpoint-path /scratch/rv2138/checkpoints/model_tr
 --num-epochs 160 \
 --batch-size 128 \
 --fine-tune 1 \
---dataset-folder /scratch/rv2138/dataset \
+--dataset-folder /dataset \
+--new-dataset-folder /scratch/rv2138/dataset \
 --learning-rate-classifier 0.00001 \
 --learning-rate-model 0.00001 \
 --weight-decay 0.01 \

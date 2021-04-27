@@ -48,6 +48,7 @@ def main():
 	parser.add_argument('--batch-size', type=int, default= 10)
 	parser.add_argument('--num-epochs', type=int, default= 100)
 	parser.add_argument('--dataset-folder', type= str, default= "./dataset")
+	parser.add_argument('--new-dataset-folder', type= str, default= "./dataset")
 	parser.add_argument('--learning-rate-classifier', type = float, default= 0.001)
 	parser.add_argument('--learning-rate-model', type = float, default= 0.001)
 	parser.add_argument('--momentum', type= float, default= 0.9)
@@ -74,10 +75,10 @@ def main():
 	train_transform, val_transform = get_transforms() #TODO Get new transforms file
 
 	if args.new_data == 0:
-		labeled_train_dataset = CustomDataset(root= dataset_folder, split = "train", transform = train_transform)
+		labeled_train_dataset = CustomDataset(root= args.dataset_folder, split = "train", transform = train_transform)
 	else:
-		labeled_train_dataset = CustomDataset(root= dataset_folder, split = "train_new", transform = train_transform)
-	val_dataset = CustomDataset(root= dataset_folder, split = "val", transform = val_transform)
+		labeled_train_dataset = CustomDataset(root= args.new_dataset_folder, split = "train_new", transform = train_transform)
+	val_dataset = CustomDataset(root= args.dataset_folder, split = "val", transform = val_transform)
 
 	labeled_train_loader = DataLoader(labeled_train_dataset, batch_size= batch_size, shuffle= True, num_workers= 4)
 	val_loader = DataLoader(val_dataset, batch_size= batch_size_val, shuffle= False, num_workers= 4)
