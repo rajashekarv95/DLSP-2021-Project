@@ -141,8 +141,8 @@ def main():
 
 
         for batch_idx, batch in enumerate(tqdm(labeled_train_loader)):
-            img_lab = torch.Tensor(batch[0])
-            targets_lab =  torch.Tensor(batch[1])
+            img_lab = torch.cat(batch[0], dim=0)
+            targets_lab = torch.cat(batch[1], dim=0)
             img_lab = img_lab.to(device)
             targets_lab = targets_lab.to(device)
             logits_lab = model(img_lab)
