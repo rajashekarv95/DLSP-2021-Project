@@ -141,8 +141,8 @@ def main():
 
 
         for batch_idx, batch in enumerate(tqdm(labeled_train_loader)):
-            print("batch[0] shape", batch[0].shape)
-            print("batch[1] shape", batch[1].shape)
+            print("batch[0] shape", batch[0])
+            print("batch[1] shape", batch[1])
             img_lab = torch.cat(batch[0], dim=0)
             print("img_lab shape", img_lab.shape)
             targets_lab = torch.cat(batch[1], dim=0)
