@@ -120,38 +120,12 @@ def main():
     model.train()
     for epoch in tqdm(range(n_epochs)):
         loss_epoch = 0.0
-        # for batch_idx in tqdm(range(n_steps)):
-        #     try:
-        #         img_lab, targets_lab = labeled_iter.next()
-        #     except:
-        #         labeled_iter = iter(labeled_train_loader)
-        #         img_lab, targets_lab = labeled_iter.next()
-        #     img_lab = img_lab.to(device)
-        #     targets_lab = targets_lab.to(device)
-
-        #     logits_lab = model(img_lab)
-        #     loss_labeled = F.cross_entropy(logits_lab, targets_lab, reduction='mean')
-
-        #     loss_epoch += loss_labeled
-
-        #     optimizer.zero_grad()
-        #     loss_labeled.backward()
-        #     optimizer.step()
-        #     scheduler.step()
-
-
         for batch_idx, batch in enumerate(tqdm(labeled_train_loader)):
-            #print("batch[0] shape", batch[0])
-            #print("batch[1] shape", batch[1])
             img_lab = torch.cat(batch[0], dim=0)
-            print("img_lab shape", img_lab.shape)
-            #targets_lab = torch.cat(batch[1], dim=0)
             
             img_lab = img_lab.to(device)
             targets_lab = batch[1].to(device)
-            print("targets_lab shape", targets_lab.shape)
             logits_lab = model(img_lab)
-            print("logits_lab shape", logits_lab.shape)
             loss_labeled = F.cross_entropy(logits_lab, targets_lab, reduction='mean')
 
             loss_epoch += loss_labeled
@@ -162,7 +136,6 @@ def main():
             scheduler.step()
 
 
-            break
         print(f"Epoch number: {epoch}, loss: {loss_epoch/(n_steps)}", flush= True)
         
         torch.save(model.state_dict(), sup_checkpoint_path)
@@ -174,10 +147,7 @@ def main():
                 logits_val = model(batch[0].to(device))
                 val_loss += F.cross_entropy(logits_val, batch[1].to(device))
                 val_size += 1
-                # break
             print("Val loss: ", val_loss/val_size, flush= True)
-
-        break
 
     
 

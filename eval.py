@@ -53,7 +53,8 @@ evalloader = torch.utils.data.DataLoader(evalset, batch_size=256, shuffle=False,
 
 net = ResNetSimCLR(base_model=args.arch, out_dim=800)
 checkpoint = torch.load(args.checkpoint_path)
-net.load_state_dict(checkpoint['state_dict'])
+#net.load_state_dict(checkpoint['state_dict'])
+net.load_state_dict(checkpoint)
 net = net.cuda()
 
 net.eval()
