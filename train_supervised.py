@@ -46,7 +46,7 @@ def main():
     parser.add_argument('--checkpoint-path', type=str, default= "$SCRATCH/checkpoints/model.pth")
     parser.add_argument('--sup-checkpoint-path', type=str, default= "/scratch/sm9669/checkpoints/modelsup.pth")
     parser.add_argument('--batch-size', type=int, default= 64)
-    parser.add_argument('--num-epochs', type=int, default= 30)
+    parser.add_argument('--num-epochs', type=int, default= 2)
     parser.add_argument('--num-steps', type=int, default= 10)
     parser.add_argument('--train-from-start', type= int, default= 0)
     parser.add_argument('--dataset-folder', type= str, default= "/dataset")
