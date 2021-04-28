@@ -19,7 +19,7 @@ singularity exec --nv \
 --overlay /scratch/sr5768/student_dataset.sqsh:ro \
 /scratch/work/public/singularity/cuda10.1-cudnn7-devel-ubuntu18.04.sif \
 bash -c "source /ext3/env.sh
-python3 train_simsiam_labeled.py --checkpoint-path /scratch/sr5768/checkpoints/model_barlow_wide_fixed.pth.tar \
+python3 train_tune_labeled.py --checkpoint-path /scratch/sr5768/checkpoints/model_barlow_wide_fixed.pth.tar \
 --transfer-path /scratch/sr5768/dataset/model_barlow_wide_fixed.pth.tar \
 --num-epochs 100 \
 --batch-size 128 \
