@@ -44,7 +44,7 @@ def main():
     # python3 train_fixmatch.py --checkpoint-path ./checkpoint_path/model.pth --batch-size 1 --num-epochs 1 --num-steps 1 --train-from-start 1 --dataset-folder ./dataset
     parser = argparse.ArgumentParser()
     parser.add_argument('--checkpoint-path', type=str, default= "$SCRATCH/checkpoints/model.pth")
-    parser.add_argument('--sup-checkpoint-path', type=str, default= "$SCRATCH/checkpoints/modelsup.pth")
+    parser.add_argument('--sup-checkpoint-path', type=str, default= "/scratch/sm9669/checkpoints/modelsup.pth")
     parser.add_argument('--batch-size', type=int, default= 64)
     parser.add_argument('--num-epochs', type=int, default= 30)
     parser.add_argument('--num-steps', type=int, default= 10)
