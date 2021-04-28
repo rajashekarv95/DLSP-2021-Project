@@ -176,7 +176,7 @@ def main():
 			losses.update(loss.item())
 
 			if batch_idx % 25 == 0:
-				print(f"Epoch number: {epoch}, loss_avg: {losses.avg}, loss: {loss.item()}", flush= True)
+				print(f"Epoch number: {epoch}, loss_avg: {losses.avg}, loss: {loss.item()}, best accuracy: {best_val_accuracy:.2f}", flush= True)
 
 		save_checkpoint({
 				'epoch': epoch + 1,
