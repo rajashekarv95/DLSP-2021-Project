@@ -95,7 +95,7 @@ def main():
 
     #labeled_train_dataset = CustomDataset(root= dataset_folder, split = "train", transform = train_transform)
     #val_dataset = CustomDataset(root= dataset_folder, split = "val", transform = val_transform)
-    labeled_train_loader = DataLoader(labeled_train_dataset, batch_size= batch_size_labeled, shuffle= True)
+    labeled_train_loader = DataLoader(labeled_train_dataset, batch_size= 64, shuffle= True)
     val_loader = DataLoader(val_dataset, batch_size= batch_size_val, shuffle= False)
 
 
@@ -143,7 +143,6 @@ def main():
         for batch_idx, batch in enumerate(tqdm(labeled_train_loader)):
             #print("batch[0] shape", batch[0])
             #print("batch[1] shape", batch[1])
-            print("batch shape", batch.shape)
             img_lab = torch.cat(batch[0], dim=0)
             print("img_lab shape", img_lab.shape)
             #targets_lab = torch.cat(batch[1], dim=0)
@@ -163,7 +162,7 @@ def main():
             scheduler.step()
 
 
-            # break
+            break
         print(f"Epoch number: {epoch}, loss: {loss_epoch/(n_steps)}", flush= True)
         
         torch.save(model.state_dict(), sup_checkpoint_path)
@@ -178,7 +177,7 @@ def main():
                 # break
             print("Val loss: ", val_loss/val_size, flush= True)
 
-        # break
+        break
 
     
 
