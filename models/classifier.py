@@ -9,6 +9,7 @@ class Classifier(torch.nn.Module):
 		self.fc2 = torch.nn.Linear(8192, 8192)
 		self.fc3 = torch.nn.Linear(8192, 8192)
 		self.fc4 = torch.nn.Linear(8192, 800)
+		self.bn0 = torch.nn.BatchNorm1d(ip)
 		self.bn1 = torch.nn.BatchNorm1d(8192)
 		self.bn2 = torch.nn.BatchNorm1d(8192)
 		self.bn3 = torch.nn.BatchNorm1d(8192)
@@ -16,6 +17,7 @@ class Classifier(torch.nn.Module):
 
 	def forward(self, x):
 		# TODO
+		x = self.bn0(x)
 		x = self.bn1(self.fc1(x))
 		x = F.relu(x)
 		x = self.dropout(x)
