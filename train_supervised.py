@@ -99,7 +99,7 @@ def main():
     val_loader = DataLoader(val_dataset, batch_size= batch_size_val, shuffle= False)
 
 
-    labeled_iter = iter(labeled_train_loader)
+    #labeled_iter = iter(labeled_train_loader)
 
     # model = torchvision.models.wide_resnet50_2(pretrained= False, num_classes = num_classes)
     #model = resnet34(pretrained=False, num_classes = 800)
@@ -120,15 +120,29 @@ def main():
     model.train()
     for epoch in tqdm(range(n_epochs)):
         loss_epoch = 0.0
-        for batch_idx in tqdm(range(n_steps)):
-            try:
-                img_lab, targets_lab = labeled_iter.next()
-            except:
-                labeled_iter = iter(labeled_train_loader)
-                img_lab, targets_lab = labeled_iter.next()
-            img_lab = img_lab.to(device)
-            targets_lab = targets_lab.to(device)
+        # for batch_idx in tqdm(range(n_steps)):
+        #     try:
+        #         img_lab, targets_lab = labeled_iter.next()
+        #     except:
+        #         labeled_iter = iter(labeled_train_loader)
+        #         img_lab, targets_lab = labeled_iter.next()
+        #     img_lab = img_lab.to(device)
+        #     targets_lab = targets_lab.to(device)
 
+        #     logits_lab = model(img_lab)
+        #     loss_labeled = F.cross_entropy(logits_lab, targets_lab, reduction='mean')
+
+        #     loss_epoch += loss_labeled
+
+        #     optimizer.zero_grad()
+        #     loss_labeled.backward()
+        #     optimizer.step()
+        #     scheduler.step()
+
+
+        for batch_idx, batch in enumerate(tqdm(labeled_train_loader)):
+            img_lab = batch[0].to(device)
+            targets_lab = batch[1].to(device)
             logits_lab = model(img_lab)
             loss_labeled = F.cross_entropy(logits_lab, targets_lab, reduction='mean')
 
