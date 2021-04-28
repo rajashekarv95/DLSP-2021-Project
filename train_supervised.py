@@ -95,7 +95,7 @@ def main():
 
     #labeled_train_dataset = CustomDataset(root= dataset_folder, split = "train", transform = train_transform)
     #val_dataset = CustomDataset(root= dataset_folder, split = "val", transform = val_transform)
-    labeled_train_loader = DataLoader(labeled_train_dataset, batch_size= 64, shuffle= True)
+    labeled_train_loader = DataLoader(labeled_train_dataset, batch_size= 128, shuffle= True)
     val_loader = DataLoader(val_dataset, batch_size= batch_size_val, shuffle= False)
 
 
