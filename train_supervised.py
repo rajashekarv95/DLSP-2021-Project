@@ -16,6 +16,7 @@ from torch.optim.lr_scheduler import LambdaLR
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
 from tqdm import tqdm
 import torchvision
+from torchvision import datasets, transforms, models
 
 from dataloader import CustomDataset
 
