@@ -141,14 +141,14 @@ def main():
 
 
         for batch_idx, batch in enumerate(tqdm(labeled_train_loader)):
-            print("batch[0] shape", batch[0])
-            print("batch[1] shape", batch[1])
+            #print("batch[0] shape", batch[0])
+            #print("batch[1] shape", batch[1])
             img_lab = torch.cat(batch[0], dim=0)
-            print("img_lab shape", img_lab.shape)
-            targets_lab = torch.cat(batch[1], dim=0)
-            print("targets_lab shape", targets_lab.shape)
+            #print("img_lab shape", img_lab.shape)
+            #targets_lab = torch.cat(batch[1], dim=0)
+            #print("targets_lab shape", targets_lab.shape)
             img_lab = img_lab.to(device)
-            targets_lab = targets_lab.to(device)
+            targets_lab = batch[1].to(device)
             logits_lab = model(img_lab)
             loss_labeled = F.cross_entropy(logits_lab, targets_lab, reduction='mean')
 
