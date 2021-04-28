@@ -37,7 +37,7 @@ def main():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--checkpoint-path', type=str, default= "./checkpoints/model_barlow_wide_fixed.pth.tar")
 	parser.add_argument('--transfer-path', type=str, default= "./dataset/model_barlow_wide_fixed.pth.tar") 
-	parser.add_argument('--best-path', type= str, default= "./checkpoints/model_barlow_wide_fixed_best.pth.tar")ckpoints/model_barlow_best.pth.tar")
+	parser.add_argument('--best-path', type= str, default= "./checkpoints/model_barlow_wide_fixed_best.pth.tar")
 	parser.add_argument('--batch-size', type=int, default= 10)
 	parser.add_argument('--num-epochs', type=int, default= 100)
 	parser.add_argument('--dataset-folder', type= str, default= "./dataset")
