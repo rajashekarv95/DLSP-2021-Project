@@ -41,7 +41,7 @@ std = (0.3065, 0.2728, 0.2355)
 dataset_folder= '/dataset'
 dataset = ContrastiveLearningDataset(dataset_folder)
 
-evalset = dataset.get_val_dataset(2)
+evalset = dataset.get_val_dataset(1)
 
 # eval_transform = transforms.Compose([
 #         transforms.ToTensor(),
