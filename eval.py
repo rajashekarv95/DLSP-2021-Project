@@ -34,12 +34,17 @@ args = parser.parse_args()
 mean = (0.4836, 0.4527, 0.4011)
 std = (0.3065, 0.2728, 0.2355)
 
-eval_transform = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Normalize(mean=mean, std=std)
-    ])
+dataset_folder= '/dataset'
+dataset = ContrastiveLearningDataset(dataset_folder)
 
-evalset = CustomDataset(root='/dataset', split="val", transform=eval_transform)
+evalset = dataset.get_val_dataset(2)
+
+# eval_transform = transforms.Compose([
+#         transforms.ToTensor(),
+#         transforms.Normalize(mean=mean, std=std)
+#     ])
+
+#evalset = CustomDataset(root='/dataset', split="val", transform=eval_transform)
 evalloader = torch.utils.data.DataLoader(evalset, batch_size=256, shuffle=False, num_workers=2)
 
 net = ResNetSimCLR(base_model=args.arch, out_dim=800)
