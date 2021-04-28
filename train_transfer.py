@@ -67,7 +67,9 @@ def main():
 	if torch.cuda.is_available():
 		torch.cuda.manual_seed(args.seed)
 
-torch.backends.cudnn.deterministic=True
+	torch.backends.cudnn.deterministic=True
+
+	print(f"Training with seed {args.seed}")
 
 	if torch.cuda.is_available():
 		device = torch.device("cuda")
