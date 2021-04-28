@@ -141,8 +141,10 @@ def main():
 
 
         for batch_idx, batch in enumerate(tqdm(labeled_train_loader)):
-            img_lab = batch[0].to(device)
-            targets_lab = batch[1].to(device)
+            img_lab = torch.Tensor(batch[0])
+            targets_lab =  torch.Tensor(batch[1])
+            img_lab = img_lab.to(device)
+            targets_lab = targets_lab.to(device)
             logits_lab = model(img_lab)
             loss_labeled = F.cross_entropy(logits_lab, targets_lab, reduction='mean')
 
