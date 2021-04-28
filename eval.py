@@ -13,6 +13,10 @@ from torchvision import datasets, transforms, models
 from dataloader import CustomDataset
 from models.resnet_simclr import ResNetSimCLR
 
+
+from data_aug.contrastive_learning_dataset import ContrastiveLearningDataset
+
+
 model_names = sorted(name for name in models.__dict__
                      if name.islower() and not name.startswith("__")
                      and callable(models.__dict__[name]))
