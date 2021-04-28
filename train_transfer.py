@@ -26,13 +26,6 @@ from models.classifier import Classifier
 
 from utils.misc import Average
 
-random.seed(10)
-np.random.seed(10)
-torch.manual_seed(10)
-if torch.cuda.is_available():
-	torch.cuda.manual_seed(10)
-
-torch.backends.cudnn.deterministic=True
 
 def exclude_bias_and_norm(p):
 	return p.ndim == 1
@@ -58,6 +51,7 @@ def main():
 	parser.add_argument('--model-name', type= str, default="moco")
 	parser.add_argument('--dropout', type= float, default= 0)
 	parser.add_argument('--new-data', type= int, default= 0)
+	parser.add_argument('--seed', type = int, default= 0)
 	args = parser.parse_args()
 
 	dataset_folder = args.dataset_folder
@@ -66,6 +60,14 @@ def main():
 	n_epochs = args.num_epochs
 	weight_decay = args.weight_decay
 	checkpoint_path = args.checkpoint_path
+
+	random.seed(args.seed)
+	np.random.seed(args.seed)
+	torch.manual_seed(args.seed)
+	if torch.cuda.is_available():
+		torch.cuda.manual_seed(args.seed)
+
+torch.backends.cudnn.deterministic=True
 
 	if torch.cuda.is_available():
 		device = torch.device("cuda")
