@@ -46,7 +46,7 @@ def main():
     parser.add_argument('--checkpoint-path', type=str, default= "$SCRATCH/checkpoints/model.pth")
     parser.add_argument('--sup-checkpoint-path', type=str, default= "/scratch/sm9669/checkpoints/modelsup.pth")
     parser.add_argument('--batch-size', type=int, default= 64)
-    parser.add_argument('--num-epochs', type=int, default= 100)
+    parser.add_argument('--num-epochs', type=int, default= 200)
     parser.add_argument('--num-steps', type=int, default= 10)
     parser.add_argument('--train-from-start', type= int, default= 0)
     parser.add_argument('--dataset-folder', type= str, default= "/dataset")
@@ -106,12 +106,14 @@ def main():
     model = ResNetSimCLR(base_model=args.arch, out_dim=800)
 
     model = model.to(device)
-    if train_from_start == 0:
-        if os.path.exists(checkpoint_path):
-            checkpoint = torch.load(checkpoint_path)
-            model.load_state_dict(checkpoint['state_dict'])
-            print("Restoring model from checkpoint")
+    # if train_from_start == 0:
+    #     if os.path.exists(checkpoint_path):
+    #         checkpoint = torch.load(checkpoint_path)
+    #         model.load_state_dict(checkpoint['state_dict'])
+    #         print("Restoring model from checkpoint")
 
+    checkpoint = torch.load(sup_checkpoint_path)
+    model.load_state_dict(checkpoint)
 
     optimizer = torch.optim.Adam(model.parameters(), lr= learning_rate, weight_decay=1e-4)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=len(labeled_train_loader), eta_min=0,
