@@ -16,21 +16,14 @@ set -x
 
 singularity exec --nv \
 --overlay /scratch/sr5768/env/overlay-50G-10M.ext3:ro \
---overlay /scratch/sr5768/student_dataset.sqsh:ro \
+--overlay /scratch/sr5768/checkpoints/student_dataset.sqsh:ro \
 /scratch/work/public/singularity/cuda10.1-cudnn7-devel-ubuntu18.04.sif \
 bash -c "source /ext3/env.sh
 python3 train_tune_labeled.py --checkpoint-path /scratch/sr5768/checkpoints/model_barlow_wide_fixed.pth.tar \
 --transfer-path /scratch/sr5768/dataset/model_barlow_wide_fixed.pth.tar \
---num-epochs 160 \                                                                                                                                                                                          
---batch-size 64 \                                                                                                                                                                                           
---fine-tune 1 \                                                                                                                                                                                             
---dataset-folder /dataset \                                                                                                                                                                                 
---learning-rate-classifier 0.00001 \                                                                                                                                                                        
---learning-rate-model 0.00001 \                                                                                                                                                                             
---weight-decay 0.001 \                                                                                                                                                                                      
---wide 1 \                                                                                                                                                                                                  
---model-name barlow \                                                                                                                                                                                       
---dropout 0.1 \                                                                                                                                                                                             
---seed 10 
+--num-epochs 160 \                                                                                                                           --batch-size 64 \                                                                                                                            --fine-tune 1 \                                                                                                                              --dataset-folder /dataset \ 
+--learning-rate-classifier 0.00001 \                                                                                                         
+--learning-rate-model 0.00001 \                                                                                                        
+--weight-decay 0.001 \                                                                                                                       --wide 1 \                                                                                                                                   --model-name barlow \                
+--dropout 0.1 \                                                                                                                              --seed 10 
 " 
-                                                                                                                                                                                              
