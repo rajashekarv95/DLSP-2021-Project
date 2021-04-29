@@ -45,12 +45,12 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--checkpoint-path', type=str, default= "$SCRATCH/checkpoints/model.pth")
     parser.add_argument('--sup-checkpoint-path', type=str, default= "/scratch/sm9669/checkpoints/modelsup.pth")
-    parser.add_argument('--batch-size', type=int, default= 64)
-    parser.add_argument('--num-epochs', type=int, default= 200)
+    parser.add_argument('--batch-size', type=int, default= 32)
+    parser.add_argument('--num-epochs', type=int, default= 100)
     parser.add_argument('--num-steps', type=int, default= 10)
     parser.add_argument('--train-from-start', type= int, default= 0)
     parser.add_argument('--dataset-folder', type= str, default= "/dataset")
-    parser.add_argument('--learning-rate', type = float, default= 0.0003)
+    parser.add_argument('--learning-rate', type = float, default= 0.001)
     parser.add_argument('--threshold', type = float, default= 0.5)
     parser.add_argument('--mu', type= int, default= 7)
     parser.add_argument('-a', '--arch', metavar='ARCH', default='resnet18',
@@ -95,7 +95,7 @@ def main():
 
     #labeled_train_dataset = CustomDataset(root= dataset_folder, split = "train", transform = train_transform)
     #val_dataset = CustomDataset(root= dataset_folder, split = "val", transform = val_transform)
-    labeled_train_loader = DataLoader(labeled_train_dataset, batch_size= 64, shuffle= True)
+    labeled_train_loader = DataLoader(labeled_train_dataset, batch_size= 32, shuffle= True)
     val_loader = DataLoader(val_dataset, batch_size= batch_size_val, shuffle= False)
 
 
@@ -115,9 +115,9 @@ def main():
     checkpoint = torch.load(sup_checkpoint_path)
     model.load_state_dict(checkpoint)
 
-    optimizer = torch.optim.Adam(model.parameters(), lr= learning_rate, weight_decay=1e-4)
-    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=len(labeled_train_loader), eta_min=0,
-                                                           last_epoch=-1)
+    #optimizer = torch.optim.Adam(model.parameters(), lr= learning_rate, weight_decay=1e-4)
+    optimizer = torch.optim.Adam(model.parameters(), lr= learning_rate)
+    #scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=len(labeled_train_loader), eta_min=0,last_epoch=-1)
 
     model.train()
     for epoch in tqdm(range(n_epochs)):
@@ -135,7 +135,7 @@ def main():
             optimizer.zero_grad()
             loss_labeled.backward()
             optimizer.step()
-            scheduler.step()
+            #scheduler.step()
 
 
         print(f"Epoch number: {epoch}, loss: {loss_epoch}", flush= True)
