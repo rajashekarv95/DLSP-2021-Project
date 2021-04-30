@@ -5,6 +5,7 @@ import os
 import yaml
 import matplotlib.pyplot as plt
 import torchvision
+from tqdm import tqdm
 
 from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
@@ -54,7 +55,8 @@ criterion = torch.nn.CrossEntropyLoss().to(device)
 sup_checkpoint_path = "/scratch/sm9669/checkpoints/modelsup.pth"
 epochs = 100
 model.train()
-for epoch in range(epochs):
+
+for epoch in tqdm(range(epochs)):
 	loss_epoch = 0.0
 	correct = 0
 	total = 0
@@ -75,19 +77,20 @@ for epoch in range(epochs):
 
 	torch.save(model.state_dict(), sup_checkpoint_path)
 	model.eval()
-	val_correct=0
-	val_total=0
-	val_loss_epoch=0
-	for counter, (x_batch, y_batch) in enumerate(validation_loader):
-		x_batch = x_batch.to(device)
-		y_batch = y_batch.to(device)
+	with torch.no_grad():
+		val_correct=0
+		val_total=0
+		val_loss_epoch=0
+		for counter, (x_batch, y_batch) in enumerate(validation_loader):
+			x_batch = x_batch.to(device)
+			y_batch = y_batch.to(device)
 
-		logits = model(x_batch)
+			logits = model(x_batch)
 
-		val_loss_epoch = val_loss_epoch +criterion(logits, y_batch)
-		_, predicted = torch.max(logits.data, 1)
-		val_total += y_batch.size(0)
-		val_correct += (predicted == y_batch).sum().item()
+			val_loss_epoch = val_loss_epoch +criterion(logits, y_batch)
+			_, predicted = torch.max(logits.data, 1)
+			val_total += y_batch.size(0)
+			val_correct += (predicted == y_batch).sum().item()
 
-	print(f"Epoch {epoch}\tTop1 Train accuracy: {(100 * correct / total):.2f}\tTop1 eval accuracy: {(100 * val_correct / val_total):.2f}\ttrain loss: {loss_epoch}")
-	print(f"Epoch {epoch}\tval loss: {val_loss_epoch}")
+		print(f"Epoch {epoch}\tTop1 Train accuracy: {(100 * correct / total):.2f}\tTop1 eval accuracy: {(100 * val_correct / val_total):.2f}\ttrain loss: {loss_epoch}")
+		print(f"Epoch {epoch}\tval loss: {val_loss_epoch}")
