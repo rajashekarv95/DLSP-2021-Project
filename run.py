@@ -75,9 +75,9 @@ def main():
         num_workers=args.workers, pin_memory=True, drop_last=True)
 
     model = ResNetSimCLR(base_model=args.arch, out_dim=args.out_dim)
-    # checkpoint_path = "/scratch/sm9669/checkpoints/model.pth"
-    # checkpoint = torch.load(checkpoint_path)
-    # model.load_state_dict(checkpoint['state_dict'])
+    checkpoint_path = "/scratch/sm9669/checkpoints/model.pth"
+    checkpoint = torch.load(checkpoint_path)
+    model.load_state_dict(checkpoint['state_dict'])
     #net.load_state_dict(checkpoint)
     model = model.cuda()
 
