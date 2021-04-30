@@ -58,6 +58,7 @@ def main():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--checkpoint-path', type=str, default= "./checkpoints/model_fm_transfer.pth.tar")
 	parser.add_argument('--transfer-path', type=str, default= "./checkpoints/model_transfer.pth.tar")
+	parser.add_argument('--best-path', type= str, default= "./checkpoints/model_barlow_best.pth.tar")
 	parser.add_argument('--batch-size', type=int, default= 64)
 	parser.add_argument('--num-epochs', type=int, default= 10)
 	parser.add_argument('--num-steps', type=int, default= 10)
@@ -172,6 +173,7 @@ def main():
 	losses_l = Average()
 	losses_u = Average()
 	mask_probs = Average()
+	best_val_accuracy = 25.0 #TODO
 
 	for epoch in tqdm(range(start_epoch, n_epochs)):
 		if args.fine_tune:
@@ -243,13 +245,13 @@ def main():
 
 			# break
 			if batch_idx % 25 == 0:
-				print(f"Epoch number: {epoch}, loss: {losses.avg}, loss lab: {losses_l.avg}, loss unlab: {losses_u.avg}, mask: {mask_probs.avg}, loss_here: {loss_total.item()}", flush= True)
+				print(f"Epoch number: {epoch}, loss: {losses.avg}, loss lab: {losses_l.avg}, loss unlab: {losses_u.avg}, mask: {mask_probs.avg}, loss_here: {loss_total.item()}, best accuracy: {best_val_accuracy:.2f}", flush= True)
 			# print(optimizer.param_groups[0]['lr'])
 		
 
 		save_checkpoint({
 				'epoch': epoch + 1,
-				'backbone_state_dict': model.state_dict(),
+				'model_state_dict': model.state_dict(),
 				'classifier_state_dict': model.state_dict(),
 				'optimizer': optimizer.state_dict(),
 				'scheduler': scheduler.state_dict(),
@@ -272,6 +274,19 @@ def main():
 				val_size += 1
 				# break
 		print(f"Val loss: {val_loss/val_size}, Accuracy: {(100 * correct / total):.2f}%", flush= True)
+		if 100 * correct / total > best_val_accuracy:
+			best_val_accuracy = 100 * correct / total
+			best_val_loss = val_loss/val_size
+			print(f"Saving the best model with {best_val_accuracy:.2f}% accuracy and {best_val_loss:.2f} loss", flush= True)
+			save_checkpoint({
+				'epoch': epoch + 1,
+				'model_state_dict': model.state_dict(),
+				'classifier_state_dict': classifier.state_dict(),
+				'optimizer': optimizer.state_dict(),
+				'scheduler': scheduler.state_dict(),
+				'best_val_accuracy': best_val_accuracy,
+				'best_val_loss': best_val_loss
+			}, args.best_path)
 		model.train()
 		classifier.train()
 
