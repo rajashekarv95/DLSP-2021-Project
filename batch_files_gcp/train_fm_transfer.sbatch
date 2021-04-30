@@ -23,7 +23,7 @@ singularity exec --nv \
 source /ext3/env.sh
 conda activate dev
 python train_fixmatch_transfer.py --checkpoint-path $SCRATCH/checkpoints/model_fixmatch_transfer.pth.tar \
---transfer-path $SCRATCH/model_transfer_barlow_wide_best_1.pth.tar \
+--transfer-path $SCRATCH/checkpoints/model_transfer_barlow_wide_best_1.pth.tar \
 --best-path $SCRATCH/checkpoints/model_fixmatch_transfer_best.pth.tar \
 --num-epochs 80 \
 --num-steps 400 \
