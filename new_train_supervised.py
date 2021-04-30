@@ -65,7 +65,7 @@ for epoch in range(epochs):
 		logits = model(x_batch)
 		loss_epoch = loss_epoch +criterion(logits, y_batch)
 		_, predicted = torch.max(logits.data, 1)
-		total += labels.size(0)
+		total += y_batch.size(0)
 		correct += (predicted == y_batch).sum().item()
 
 		optimizer.zero_grad()
@@ -85,7 +85,7 @@ for epoch in range(epochs):
 
 		val_loss_epoch = val_loss_epoch +criterion(logits, y_batch)
 		_, predicted = torch.max(logits.data, 1)
-		val_total += labels.size(0)
+		val_total += y_batch.size(0)
 		val_correct += (predicted == y_batch).sum().item()
 
 	print(f"Epoch {epoch}\tTop1 Train accuracy: {(100 * correct / total):.2f}\tTop1 eval accuracy: {(100 * val_correct / val_total):.2f}\ttrain loss: {loss_epoch}")
