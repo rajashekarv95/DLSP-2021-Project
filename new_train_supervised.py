@@ -75,6 +75,7 @@ for epoch in tqdm(range(epochs)):
 		loss.backward()
 		optimizer.step()
 
+	print(f"Epoch number: {epoch}, trainloss: {loss_epoch}, train accuracy: {(100 * correct / total):.2f}", flush= True)
 	torch.save(model.state_dict(), sup_checkpoint_path)
 	model.eval()
 	with torch.no_grad():
@@ -92,5 +93,4 @@ for epoch in tqdm(range(epochs)):
 			val_total += y_batch.size(0)
 			val_correct += (predicted == y_batch).sum().item()
 
-		print(f"Epoch {epoch}\tTop1 Train accuracy: {(100 * correct / total):.2f}\tTop1 eval accuracy: {(100 * val_correct / val_total):.2f}\ttrain loss: {loss_epoch}")
-		print(f"Epoch {epoch}\tval loss: {val_loss_epoch}")
+		print(f"Epoch number: {epoch}, val loss: {val_loss_epoch}, val accuracy: {(100 * val_correct / val_total):.2f}", flush= True)
