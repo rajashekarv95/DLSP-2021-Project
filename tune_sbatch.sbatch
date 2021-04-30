@@ -30,6 +30,6 @@ python3 train_tune_labeled.py --checkpoint-path /scratch/sr5768/checkpoints/mode
 --weight-decay 0.001 \                                                                                                                                                                                      
 --wide 1 \                                                                                                                                                                                                  
 --model-name barlow \                                                                                                                                                                                       
---dropout 0.1 \                                                                                                                                                                                             
+--dropout 0.1 \                                                                                                                                                                         
 --seed 10 
 "
