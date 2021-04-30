@@ -42,7 +42,7 @@ for k in list(state_dict.keys()):
   del state_dict[k]
 
   log = model.load_state_dict(state_dict, strict=False)
-assert log.missing_keys == ['fc.weight', 'fc.bias']
+#assert log.missing_keys == ['fc.weight', 'fc.bias']
 
 # freeze all layers but the last fc
 for name, param in model.named_parameters():
