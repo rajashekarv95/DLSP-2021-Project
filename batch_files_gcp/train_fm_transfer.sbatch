@@ -19,7 +19,8 @@ singularity exec --nv \
 --overlay /scratch/DL21SP/conda_fixed.sqsh:ro \
 --overlay /scratch/rv2138/student_dataset.sqsh:ro \
 /share/apps/images/cuda11.1-cudnn8-devel-ubuntu18.04.sif \
-bash -c "source /ext3/env.sh
+/bin/bash -c "
+source /ext3/env.sh
 conda activate dev
 python train_fixmatch_transfer.py --checkpoint-path $SCRATCH/checkpoints/model_fixmatch_transfer.pth.tar \
 --transfer-path $SCRATCH/model_transfer_barlow_wide_best_1.pth.tar \
