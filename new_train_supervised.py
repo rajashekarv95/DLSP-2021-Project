@@ -63,7 +63,8 @@ for epoch in range(epochs):
 		y_batch = y_batch.to(device)
 
 		logits = model(x_batch)
-		loss_epoch = loss_epoch +criterion(logits, y_batch)
+		loss = criterion(logits, y_batch)
+		loss_epoch = loss_epoch+loss
 		_, predicted = torch.max(logits.data, 1)
 		total += y_batch.size(0)
 		correct += (predicted == y_batch).sum().item()
