@@ -27,8 +27,11 @@ validation_loader = DataLoader(evalset, batch_size=256,
 
 model = torchvision.models.resnet50(pretrained=False, num_classes=800).to(device)
 
-checkpoint = torch.load("/scratch/sm9669/checkpoints/model.pth")
-state_dict = checkpoint['state_dict']
+# checkpoint = torch.load("/scratch/sm9669/checkpoints/model.pth")
+# state_dict = checkpoint['state_dict']
+
+state_dict = torch.load("/scratch/sm9669/checkpoints/modelsup.pth")
+# state_dict = checkpoint['state_dict']
 
 for k in list(state_dict.keys()):
 
@@ -49,7 +52,8 @@ for name, param in model.named_parameters():
 parameters = list(filter(lambda p: p.requires_grad, model.parameters()))
 assert len(parameters) == 2  # fc.weight, fc.bias
 
-optimizer = torch.optim.Adam(model.parameters(), lr=3e-4, weight_decay=0.0008)
+#optimizer = torch.optim.Adam(model.parameters(), lr=3e-4, weight_decay=0.0008)
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001, weight_decay=0.0008)
 criterion = torch.nn.CrossEntropyLoss().to(device)
 
 sup_checkpoint_path = "/scratch/sm9669/checkpoints/modelsup.pth"
