@@ -116,19 +116,21 @@ def main():
 	unlabeled_iter = iter(unlabeled_train_loader)
 
 	# model = torchvision.models.wide_resnet50_2(pretrained= False, num_classes = num_classes)
-	if n_layers == 18:
-		model = resnet18(pretrained=False, num_classes = 800)
-		classifier = Classifier(ip= 512, dp = 0)
-	elif n_layers == 34:
-		model = resnet34(pretrained=False, num_classes = 800)
-		classifier = Classifier(ip= 2048, dp = 0)
-	else:
-		raise ValueError("Wrong value passed for layers")
+	# if n_layers == 18:
+	# 	model = resnet18(pretrained=False, num_classes = 800)
+	# 	classifier = Classifier(ip= 512, dp = 0)
+	# elif n_layers == 34:
+	# 	model = resnet34(pretrained=False, num_classes = 800)
+	# 	classifier = Classifier(ip= 2048, dp = 0)
+	# else:
+	# 	raise ValueError("Wrong value passed for layers")
 
+	model = wide_resnet50_2(pretrained=False, num_classes = 800)
+	classifier = Classifier(ip= 2048, dp = 0)
 	start_epoch = 0
 
 	checkpoint = torch.load(args.transfer_path, map_location= device)
-	model.load_state_dict(checkpoint['model_barlow_state_dict'])
+	model.load_state_dict(checkpoint['model_state_dict'])
 	classifier.load_state_dict(checkpoint['classifier_state_dict'])
 
 	param_groups = [dict(params=classifier.parameters(), lr=args.learning_rate)]
