@@ -63,7 +63,7 @@ total = 0
 with torch.no_grad():
     for data in evalloader:
         images, labels = data
-        images = torch.cat(images, dim=0)
+        #images = torch.cat(images, dim=0)
         images = images.cuda()
         labels = labels.cuda()
 
