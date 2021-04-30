@@ -29,6 +29,5 @@ singularity exec --nv \
 /bin/bash -c "
 source /ext3/env.sh
 conda activate dev
-python train_supervised.py
-python eval.py --checkpoint-path $SCRATCH/checkpoints/modelsup.pth
+python new_train_supervised.py
 "
