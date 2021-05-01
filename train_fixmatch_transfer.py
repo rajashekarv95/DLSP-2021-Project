@@ -64,6 +64,7 @@ def main():
 	parser.add_argument('--num-steps', type=int, default= 10)
 	parser.add_argument('--train-from-start', type= int, default= 1)
 	parser.add_argument('--dataset-folder', type= str, default= "./dataset")
+	parser.add_argument('--new-dataset-folder', type= str, default= "./dataset")
 	parser.add_argument('--learning-rate', type = float, default= 0.01)
 	parser.add_argument('--threshold', type = float, default= 0.5)
 	parser.add_argument('--mu', type= int, default= 7)
@@ -72,6 +73,7 @@ def main():
 	parser.add_argument('--weight-decay', type= float, default= 0.001)
 	parser.add_argument('--layers', type= int, default= 18)
 	parser.add_argument('--fine-tune', type= int, default= 1)
+	parser.add_argument('--new-data', type= int, default= 0)
 	args = parser.parse_args()
 
 	dataset_folder = args.dataset_folder
@@ -100,7 +102,11 @@ def main():
 	# print("pwd: ", os.getcwd())
 	train_transform, val_transform = get_transforms()
 
-	labeled_train_dataset = CustomDataset(root= dataset_folder, split = "train", transform = train_transform)
+	if args.new_data == 0:
+		labeled_train_dataset = CustomDataset(root= args.dataset_folder, split = "train", transform = train_transform)
+	else:
+		labeled_train_dataset = CustomDataset(root= args.new_dataset_folder, split = "train_new", transform = train_transform)
+	# labeled_train_dataset = CustomDataset(root= dataset_folder, split = "train", transform = train_transform)
 	unlabeled_train_dataset = CustomDataset(root= dataset_folder, 
 											split = "unlabeled", 
 											transform = TransformFixMatch(mean = 0, std = 0))#TODO
