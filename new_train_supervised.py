@@ -18,7 +18,7 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 print("Using device:", device)
 
 trainset = CustomDataset(root='/dataset', split='train', transform=transforms.ToTensor())
-train_loader = DataLoader(trainset, batch_size=32,
+train_loader = DataLoader(trainset, batch_size=256,
                             num_workers=0, drop_last=False, shuffle=False)
 
 evalset = CustomDataset(root='/dataset', split='val', transform=transforms.ToTensor())
@@ -52,12 +52,12 @@ for name, param in model.named_parameters():
 parameters = list(filter(lambda p: p.requires_grad, model.parameters()))
 assert len(parameters) == 2  # fc.weight, fc.bias
 
-#optimizer = torch.optim.Adam(model.parameters(), lr=3e-4, weight_decay=0.0008)
-optimizer = torch.optim.Adam(model.parameters(), lr=0.001, weight_decay=0.0008)
+optimizer = torch.optim.Adam(model.parameters(), lr=3e-4, weight_decay=0.0008)
+#optimizer = torch.optim.Adam(model.parameters(), lr=0.001, weight_decay=0.0008)
 criterion = torch.nn.CrossEntropyLoss().to(device)
 
 sup_checkpoint_path = "/scratch/sm9669/checkpoints/modelsup.pth"
-epochs = 600
+epochs = 1000
 model.train()
 
 for epoch in tqdm(range(epochs)):
