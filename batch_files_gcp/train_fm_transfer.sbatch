@@ -16,6 +16,7 @@ set -x
 cd $HOME/DLSP-2021-PROJECT
 
 singularity exec --nv \
+--bind /scratch \
 --overlay /scratch/DL21SP/conda_fixed.sqsh:ro \
 --overlay /scratch/rv2138/student_dataset.sqsh:ro \
 /share/apps/images/cuda11.1-cudnn8-devel-ubuntu18.04.sif \
