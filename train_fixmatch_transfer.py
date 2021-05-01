@@ -130,8 +130,7 @@ def main():
 	classifier = Classifier(ip= 2048, dp = 0)
 	start_epoch = 0
 
-	# checkpoint = torch.load(args.transfer_path, map_location= device)
-	checkpoint = torch.load(args.transfer_path)
+	checkpoint = torch.load(args.transfer_path, map_location= device)
 	model.load_state_dict(checkpoint['model_state_dict'])
 	classifier.load_state_dict(checkpoint['classifier_state_dict'])
 
