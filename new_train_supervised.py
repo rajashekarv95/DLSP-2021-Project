@@ -18,7 +18,7 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 print("Using device:", device)
 
 trainset = CustomDataset(root='/dataset', split='train', transform=transforms.ToTensor())
-train_loader = DataLoader(trainset, batch_size=256,
+train_loader = DataLoader(trainset, batch_size=32,
                             num_workers=0, drop_last=False, shuffle=False)
 
 evalset = CustomDataset(root='/dataset', split='val', transform=transforms.ToTensor())
@@ -27,10 +27,10 @@ validation_loader = DataLoader(evalset, batch_size=256,
 
 model = torchvision.models.resnet50(pretrained=False, num_classes=800).to(device)
 
-# checkpoint = torch.load("/scratch/sm9669/checkpoints/model.pth")
-# state_dict = checkpoint['state_dict']
+checkpoint = torch.load("/scratch/sm9669/checkpoints/model.pth")
+state_dict = checkpoint['state_dict']
 
-state_dict = torch.load("/scratch/sm9669/checkpoints/modelsup.pth")
+#state_dict = torch.load("/scratch/sm9669/checkpoints/modelsup.pth")
 # state_dict = checkpoint['state_dict']
 
 for k in list(state_dict.keys()):
@@ -57,7 +57,7 @@ optimizer = torch.optim.Adam(model.parameters(), lr=0.001, weight_decay=0.0008)
 criterion = torch.nn.CrossEntropyLoss().to(device)
 
 sup_checkpoint_path = "/scratch/sm9669/checkpoints/modelsup.pth"
-epochs = 100
+epochs = 600
 model.train()
 
 for epoch in tqdm(range(epochs)):
