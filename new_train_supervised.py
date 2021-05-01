@@ -57,13 +57,14 @@ optimizer = torch.optim.Adam(model.parameters(), lr=3e-4, weight_decay=0.0008)
 criterion = torch.nn.CrossEntropyLoss().to(device)
 
 sup_checkpoint_path = "/scratch/sm9669/checkpoints/modelsup.pth"
-epochs = 1000
-model.train()
+epochs = 100
+
 
 for epoch in tqdm(range(epochs)):
 	loss_epoch = 0.0
 	correct = 0
 	total = 0
+	model.train()
 	for counter, (x_batch, y_batch) in enumerate(train_loader):
 		x_batch = x_batch.to(device)
 		y_batch = y_batch.to(device)
