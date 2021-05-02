@@ -1,6 +1,6 @@
 import torch
 import torch.nn.functional as F
-import lightly
+# import lightly
 from collections import OrderedDict
 
 import argparse
@@ -21,8 +21,8 @@ def main():
 		device = torch.device("cpu")
 
 	
-	model = lightly.models.BarlowTwins(wide_resnet50_2(pretrained= False), num_ftrs= 2048)
-	model = model.backbone
+	model = wide_resnet50_2(pretrained= False)
+	# model = model.backbone
 	classifier = Classifier(ip = 2048, dp= 0)
 
 	checkpoint = torch.load(args.source_path, map_location= device) 	
