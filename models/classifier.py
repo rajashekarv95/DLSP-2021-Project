@@ -15,7 +15,7 @@ class Classifier(torch.nn.Module):
 		self.bn2 = torch.nn.BatchNorm1d(8192)
 		self.bn3 = torch.nn.BatchNorm1d(8192)
 		self.bn4 = torch.nn.BatchNorm1d(8192)
-		self.bn5 = torch.nn.BatchNorm1d(8192)
+		# self.bn5 = torch.nn.BatchNorm1d(8192)
 		self.dropout = torch.nn.Dropout(dp)
 
 	def forward(self, x):
@@ -33,9 +33,6 @@ class Classifier(torch.nn.Module):
 		x = self.bn4(self.fc4(x))
 		x = F.relu(x)
 		x = self.dropout(x)
-		x = self.bn5(self.fc5(x))
-		x = F.relu(x)
-		x = self.dropout(x)
-		x = self.fc8(x)
+		x = self.fc5(x)
 
 		return x
