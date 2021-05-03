@@ -8,7 +8,7 @@ Install the libraries and dependencies from requirements.txt by running the foll
 pip install -r requirements.txt
 ```
 Run the below commands to replicate the results obtained by us.
-### Barlow Twins training
+### 1. Barlow Twins training
 Run the below command to train a Wide Resnet to learn image representations. This makes use of image augmentations and loss as described in the [Barlow Twins Paper](https://arxiv.org/pdf/2103.03230.pdf). To resume training from a checkpoint, set ```train-from-start = 0``` and provide a valid path for the parameter ```checkpoint-path```. Specify ```wide = 0``` to train it on Resnet-18 instead of Wide Resnet-50.
 ```
 python train_barlow.py \
@@ -22,7 +22,7 @@ python train_barlow.py \
 --weight-decay 0.000015 \
 --wide 1
 ```
-### Supervised training of the classifier
+### 2. Supervised training of the classifier
 Run the below command to train a classifier on top of the barlow twins backbone. Provide the path of the previously trained model to the parameter ```transfer-path```. The output of this model will be saved in the path provided in ```checkpoint-path``` and the model with best accuracy on validation set will be saved in the path provided in ```best-path```.
 ```
 python train_transfer.py \
@@ -41,7 +41,7 @@ python train_transfer.py \
 --dropout 0.1 \
 --seed 10
 ```
-### Fine tuning of the model using consistency regularization and pseudo-labelling.
+### 3. Fine tuning of the model using consistency regularization and pseudo-labelling.
 Run the below command to fine tune the model trained by the previous method using consistency regularization. As done previously, provide the path of the previously trained model to the parameter ```transfer-path```. The output of this model will be saved in the path provided in ```checkpoint-path``` and the model with best accuracy on validation set will be saved in the path provided in ```best-path```.
 ```
 python train_fixmatch_transfer.py \
@@ -65,7 +65,7 @@ The model saved at the ```best-path``` will be the final model.
 
 ## Generate image IDs to get labels for
 Run the below code to get file names of the images we need to request new labels for. For this, the following steps have to followed.
-### Get image representations
+### 1. Get image representations
 Run the below command to get image representations for both labelled and unlabeled dataset. Provide the necessary output path to the parameter ```out-path```.
 ```
 python get_img_representations.py \
@@ -75,13 +75,14 @@ python get_img_representations.py \
 --dataset-folder /dataset \
 --wide 1 
 ```
+### 2. Generate image ids to get labels for
 Run the below command to get the image ids using the processes defined in the paper. Provide the previously generated representations path to ```representations-path``` and the label outputs will be saved in ```dest-path```.
 ```
 python get_label_samples.py \
 --representations-path $SCRATCH/representations/ \
 --dest-path $SCRATCH/label_request/
 ```
-
+### 3. Create new dataset
 Run the below command to generate the new dataset.
 ```
 python create_new_dataset.py \
