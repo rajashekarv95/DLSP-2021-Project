@@ -66,7 +66,7 @@ The model saved at the ```best-path``` will be the final model.
 ## Generate image IDs to get labels for
 Run the below code to get file names of the images we need to request new labels for. For this, the following steps have to followed.
 ### Get image representations
-Run the below command to get image representations for both labelled and unlabeled dataset.
+Run the below command to get image representations for both labelled and unlabeled dataset. Provide the necessary output path to the parameter ```out-path```.
 ```
 python get_img_representations.py \
 --checkpoint-path $SCRATCH/checkpoints/model_transfer_barlow_best.pth.tar \
@@ -75,7 +75,7 @@ python get_img_representations.py \
 --dataset-folder /dataset \
 --wide 1 
 ```
-Run the below command to get the image ids using the processes defined in the paper.
+Run the below command to get the image ids using the processes defined in the paper. Provide the previously generated representations path to ```representations-path``` and the label outputs will be saved in ```dest-path```.
 ```
 python get_label_samples.py \
 --representations-path $SCRATCH/representations/ \
