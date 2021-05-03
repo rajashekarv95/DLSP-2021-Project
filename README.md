@@ -12,7 +12,7 @@ Run the below commands to replicate the results obtained by us.
 Run the below command to train a Wide Resnet to learn image representations. This makes use of image augmentations and loss as described in the [Barlow Twins Paper](https://arxiv.org/pdf/2103.03230.pdf). To resume training from a checkpoint, set ```train-from-start = 1``` and provide a valid path for the parameter ```checkpoint-path```. Specify ```wide = 1``` to train it on Resnet-18 instead of Wide Resnet-50.
 ```
 python train_barlow.py \
---checkpoint-path /scratch/rv2138/checkpoints/model_barlow.pth.tar \
+--checkpoint-path $SCRATCH/checkpoints/model_barlow.pth.tar \
 --num-epochs 500 \
 --batch-size 512 \
 --train-from-start 1 \
@@ -26,9 +26,9 @@ python train_barlow.py \
 Run the below command to train a classifier on top of the barlow twins backbone. Provide the path of the previously trained model to the parameter ```transfer-path```. The output of this model will be saved in the path provided in ```checkpoint-path``` and the model with best accuracy on validation set will be saved in the path provided in ```best-path```.
 ```
 python train_transfer.py \
---checkpoint-path /scratch/rv2138/checkpoints/model_transfer.pth.tar \
---transfer-path /scratch/rv2138/checkpoints/model_barlow.pth.tar \
---best-path /scratch/rv2138/checkpoints/model_transfer_best.pth.tar \
+--checkpoint-path $SCRATCH/checkpoints/model_transfer.pth.tar \
+--transfer-path $SCRATCH/checkpoints/model_barlow.pth.tar \
+--best-path $SCRATCH/checkpoints/model_transfer_best.pth.tar \
 --num-epochs 160 \
 --batch-size 32 \
 --fine-tune 1 \
@@ -45,9 +45,9 @@ python train_transfer.py \
 Run the below command to fine tune the model trained by the previous method using consistency regularization. As done previously, provide the path of the previously trained model to the parameter ```transfer-path```. The output of this model will be saved in the path provided in ```checkpoint-path``` and the model with best accuracy on validation set will be saved in the path provided in ```best-path```.
 ```
 python train_fixmatch_transfer.py \
---checkpoint-path /scratch/rv2138/checkpoints/model_fm_transfer.pth.tar \
---transfer-path /scratch/rv2138/checkpoints/model_transfer_best.pth.tar \
---best-path /scratch/rv2138/checkpoints/model_transfer_fm_best.pth.tar \
+--checkpoint-path $SCRATCH/checkpoints/model_fm_transfer.pth.tar \
+--transfer-path $SCRATCH/checkpoints/model_transfer_best.pth.tar \
+--best-path $SCRATCH/checkpoints/model_transfer_fm_best.pth.tar \
 --num-epochs 400 \
 --num-steps 200 \
 --train-from-start 1 \
