@@ -69,18 +69,22 @@ Run the below code to get file names of the images we need to request new labels
 Run the below command to get image representations for both labelled and unlabeled dataset.
 ```
 python get_img_representations.py \
---checkpoint-path /scratch/rv2138/checkpoints/model_transfer_barlow_best.pth.tar \
---out-path /scratch/rv2138/representations/ \
+--checkpoint-path $SCRATCH/checkpoints/model_transfer_barlow_best.pth.tar \
+--out-path $SCRATCH/representations/ \
 --batch-size 512 \
 --dataset-folder /dataset \
 --wide 1 
 ```
 Run the below command to get the image ids using the processes defined in the paper.
 ```
-python get_label_samples.py
+python get_label_samples.py \
+--representations-path $SCRATCH/representations/ \
+--dest-path $SCRATCH/label_request/
 ```
 
 Run the below command to generate the new dataset.
 ```
-python create_new_dataset.py
+python create_new_dataset.py \
+--label-request-path $SCRATCH/label_request/ \
+--dataset /dataset/
 ```

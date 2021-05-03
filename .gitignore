@@ -143,7 +143,9 @@ model.pth
 test_augment.py
 scratch.py
 /lightning_logs/
-/label_request/
+/label_request/*.npy
+/label_request/*.csv
+/label_request/*.txt
 /representations/
 /junk/
 /out/
