@@ -93,6 +93,7 @@ def main():
 					file_.write(val[:-2])
 				else:
 					file_.write(val)
+		print("Written to file", flush= True)
 		
 if __name__ == '__main__':
 	main()
