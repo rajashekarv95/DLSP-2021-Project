@@ -9,7 +9,7 @@ pip install -r requirements.txt
 ```
 Run the below commands to replicate the results obtained by us.
 ### Barlow Twins training
-Run the below command to train a Wide Resnet to learn image representations. This makes use of image augmentations and loss as described in the [Barlow Twins Paper](https://arxiv.org/pdf/2103.03230.pdf). To resume training from a checkpoint, set ```train-from-start = 1``` and provide a valid path for the parameter ```checkpoint-path```. Specify ```wide = 1``` to train it on Resnet-18 instead of Wide Resnet-50.
+Run the below command to train a Wide Resnet to learn image representations. This makes use of image augmentations and loss as described in the [Barlow Twins Paper](https://arxiv.org/pdf/2103.03230.pdf). To resume training from a checkpoint, set ```train-from-start = 0``` and provide a valid path for the parameter ```checkpoint-path```. Specify ```wide = 0``` to train it on Resnet-18 instead of Wide Resnet-50.
 ```
 python train_barlow.py \
 --checkpoint-path $SCRATCH/checkpoints/model_barlow.pth.tar \
