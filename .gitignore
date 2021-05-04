@@ -127,3 +127,25 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+#Add yours here
+dataset/
+.DS_Store
+.vscode/
+/test_augmentations/
+/checkpoints/
+/out/
+/err/
+todo.py
+/submissions/
+/augmentations/
+model.pth 
+test_augment.py
+scratch.py
+/lightning_logs/
+/label_request/*.npy
+/label_request/*.csv
+/label_request/*.txt
+/representations/
+/junk/
+/out/
